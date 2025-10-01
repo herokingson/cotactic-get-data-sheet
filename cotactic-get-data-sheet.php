@@ -30,8 +30,7 @@ function cgsd_google_sheet_container($atts) {
         'range'    => 'Raw!A1:H',
         'api_key'  => 'AIzaSyBqUmwAM8Ubuf7pnpBipJgsSvG9IjxbDlc',  // ใส่ API Key ของคุณ
     ], $atts, 'google_sheets_data');
-    // console.log($atts);
-    // echo var_dump($atts);
+
     // ส่ง attributes ให้ JS
     $atts_json = wp_json_encode($atts);
 
