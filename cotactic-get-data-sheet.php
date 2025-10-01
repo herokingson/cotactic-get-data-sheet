@@ -83,9 +83,11 @@ function cgsd_sheet_shortcode($atts) {
     $rows = array_slice($values, 1);
 
     $html = '<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-6">';
+
     foreach ($rows as $r) {
         $obj = [];
         foreach ($headers as $i => $h) $obj[$h] = isset($r[$i]) ? $r[$i] : '';
+
         $html .= '
         <article class="group relative rounded-2xl ring-1 ring-gray-200 bg-white hover:shadow-xl transition-shadow">
             <div class="font-bold text-lg text-center bg-[#0B284D] text-[#FED312] py-1 rounded-t-xl">' . esc_html($obj['Agency Name'] ?? '—') . '</div>
@@ -95,6 +97,10 @@ function cgsd_sheet_shortcode($atts) {
               <div class="text-sm text-gray-700"><strong>Phone:</strong> ' . esc_html($obj['Phone Number'] ?? '') . '</div>
             </div>
          <div class="flex items-center justify-center pb-2 gap-3">';
+
+        $url_pattern = '/^(https?:\/\/)?([\w.-]+)\.([a-zA-Z]{2,})([\w\/-]*)?$/';
+        $website = $obj['Website'] ?? '';
+        $facebook = $obj['Facebook Page'] ?? '';
 
         // ปุ่ม Website
         if (!empty($website) && preg_match($url_pattern, $website)) {
