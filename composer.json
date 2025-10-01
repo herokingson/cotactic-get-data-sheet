@@ -1,6 +1,11 @@
 {
-    "require": {
-        "guzzlehttp/guzzle": "^7.10",
-        "google/apiclient": "^2.15"
+  "config": {
+    "platform": {
+      "php": "7.4.0"
     }
+  },
+  "require": {
+    "guzzlehttp/guzzle": "^7.10",
+    "google/apiclient": "^2.15"
+  }
 }
