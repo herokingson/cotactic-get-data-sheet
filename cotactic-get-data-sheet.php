@@ -69,11 +69,11 @@ function cgsd_render_sheet_as_tailwind_cards( $atts ) {
 
     // Paths
     $plugin_base = plugin_dir_path(__FILE__);
-    $autoload    = $plugin_base . 'google-api-php-client/src/Google/autoload.php';
+    $autoload    = $plugin_base . '/google-api-php-client/src/Google/autoload.php';
     $cred_path   = $plugin_base . 'credentials.json';
 
     if ( ! file_exists($autoload) ) {
-        echo '<div class="container mx-auto p-4 text-red-700">[CGSD] Missing <code>google-api-php-client/src/Google/autoload.php</code>. Run <code>composer require google/apiclient:^2.15</code></div>';
+        echo '<div class="container mx-auto p-4 text-red-700">[CGSD] Missing <code>vendor/autoload.php</code>. Run <code>composer require google/apiclient:^2.15</code></div>';
         return ob_get_clean();
     }
     require_once $autoload;
