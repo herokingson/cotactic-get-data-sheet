@@ -238,7 +238,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Website</span>
             </span>
             <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($website) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all md:block hide">' . esc_html($website) . '</a>
         </div>' : '' ) . '
 
         ' . ( $facebook ? '
@@ -248,7 +248,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Facebook</span>
             </span>
             <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($facebook) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all md:block hide">' . esc_html($facebook) . '</a>
         </div>' : '' ) . '
 
         ' . ( $phone ? '
@@ -258,7 +258,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Phone</span>
             </span>
             <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '" class="">
-                <span class=" text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($phone) . '</span>
+                <span class=" text-[#0B284D] hover:opacity-80 transition-all md:block hide">' . esc_html($phone) . '</span>
             </a>
         </div>' : '' ) . '
 
