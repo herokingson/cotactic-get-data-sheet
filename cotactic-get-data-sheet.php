@@ -229,7 +229,6 @@ function cgsd_sheet_shortcode() {
 
     $html .= '
     <article class="group hover:shadow-lg transition-all relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-        <!-- แถบซ้าย -->
         <div class="hidden sm:flex w-1/6 min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
             ' . (
                 $logo
@@ -238,10 +237,8 @@ function cgsd_sheet_shortcode() {
             ) . '
         </div>
 
-        <!-- ตัวคั่นแนวตั้ง -->
         <div class="hidden sm:block w-px bg-gray-200"></div>
 
-        <!-- เนื้อหาขวา -->
         <div class="flex-1 p-6">
             <h3 class="text-xl font-semibold text-[#0B284D]">' . esc_html($agency) . '</h3>
             ' . ( $desc ? '<p class="mt-2 text-[15px] leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
@@ -255,7 +252,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Website</span>
             </span>
             <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-               class="underline break-all hide md:block">' . esc_html($website) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($website) . '</a>
         </div>' : '' ) . '
 
         ' . ( $facebook ? '
@@ -265,7 +262,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Facebook</span>
             </span>
             <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-               class="underline break-all hide md:block">' . esc_html($facebook) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($facebook) . '</a>
         </div>' : '' ) . '
 
         ' . ( $phone ? '
@@ -275,7 +272,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Phone</span>
             </span>
             <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '" class="">
-                <span class="hide md:block">' . esc_html($phone) . '</span>
+                <span class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($phone) . '</span>
             </a>
         </div>' : '' ) . '
 
