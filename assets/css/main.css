@@ -1,9 +1,3 @@
-.hide {
+.hide-plugin {
   display: none;
-}
-
-@media (min-width: 768px) {
-  .md\:block {
-    display: block;
-  }
 }
