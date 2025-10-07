@@ -227,7 +227,7 @@ function cgsd_sheet_shortcode() {
 
         <div class="flex-1 p-6">
             <h3 class="text-[24px] font-bold text-[#0B284D]">' . esc_html($agency) . '</h3>
-            ' . ( $desc ? '<p class="mt-2 text-[10px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
+            ' . ( $desc ? '<p class="mt-2 text-[18px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
 
             <div class="mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-6 gap-y-3 text-sm">
 
@@ -238,7 +238,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Website</span>
             </span>
             <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-               class="underline break-all text-[#0B284D] hover:opacity-80  text-[10px] font-sarabun transition-all md:block hide-plugin">' . esc_html($website) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80  text-[18px] font-sarabun transition-all md:block hide-plugin">' . esc_html($website) . '</a>
         </div>' : '' ) . '
 
         ' . ( $facebook ? '
@@ -248,7 +248,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Facebook</span>
             </span>
             <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-               class="underline break-all text-[#0B284D] hover:opacity-80  text-[10px] font-sarabun transition-all md:block hide-plugin">' . esc_html($facebook) . '</a>
+               class="underline break-all text-[#0B284D] hover:opacity-80  text-[18px] font-sarabun transition-all md:block hide-plugin">' . esc_html($facebook) . '</a>
         </div>' : '' ) . '
 
         ' . ( $phone ? '
@@ -258,7 +258,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Phone</span>
             </span>
             <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '" class="">
-                <span class=" text-[#0B284D] hover:opacity-80  text-[10px] font-sarabun transition-all md:block hide-plugin">' . esc_html($phone) . '</span>
+                <span class=" text-[#0B284D] hover:opacity-80  text-[18px] font-sarabun transition-all md:block hide-plugin">' . esc_html($phone) . '</span>
             </a>
         </div>' : '' ) . '
 
