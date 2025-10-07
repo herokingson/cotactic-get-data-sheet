@@ -215,7 +215,7 @@ function cgsd_sheet_shortcode() {
 
     $html .= '
     <article class="group hover:shadow-lg transition-all relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-        <div class="hidden sm:flex w-1/6 min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+        <div class="flex w-1/3 md:w-1/6 min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
             ' . (
                 $logo
                 ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
@@ -225,11 +225,11 @@ function cgsd_sheet_shortcode() {
 
         <div class="hidden sm:block w-px bg-gray-200"></div>
 
-        <div class="flex-1 p-6">
+        <div class="flex-1 px-2 md:p-6">
             <h3 class="text-[24px] font-bold text-[#0B284D]">' . esc_html($agency) . '</h3>
-            ' . ( $desc ? '<p class="mt-2 text-[16px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
+            ' . ( $desc ? '<p class="md:mt-2 text-[16px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
 
-            <div class="mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-6 gap-y-3 text-sm">
+            <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-6 gap-y-3 text-sm">
 
         ' . ( $website ? '
         <div class="flex items-center gap-2">
