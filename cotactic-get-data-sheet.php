@@ -18,6 +18,7 @@ function cgsd_enqueue_scripts() {
 
     wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
     wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', ['jquery'], '1.1', true);
+    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'assets/css/main.css', true);
 
     wp_localize_script('cgsd-js', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
@@ -178,21 +179,6 @@ add_action('admin_init', function () {
 
 // ---------- Shortcode ----------
 function cgsd_sheet_shortcode() {
-
-    wp_enqueue_style(
-        'cgsd-fa',
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
-        [],
-        '6.5.0'
-    );
-
-    wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
-    wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', ['jquery'], '1.1', true);
-
-    wp_localize_script('cgsd-js', 'cgsd_vars', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-    ]);
-
     $values = get_transient('cgsd_sheet_data');
 
     if (empty($values) || count($values) < 2) {
@@ -272,7 +258,7 @@ function cgsd_sheet_shortcode() {
                 <span class="sr-only">Phone</span>
             </span>
             <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '" class="">
-                <span class="underline break-all text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($phone) . '</span>
+                <span class=" text-[#0B284D] hover:opacity-80 transition-all hide md:block">' . esc_html($phone) . '</span>
             </a>
         </div>' : '' ) . '
 
