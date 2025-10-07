@@ -214,7 +214,7 @@ function cgsd_sheet_shortcode() {
     // echo '<pre>',var_dump($obj),'</pre>'; // Debug line to see the structure of $obj
     $agency   = trim($obj['Agency Name'] ?? '—');
     $desc     = trim($obj['Meta Description'] ?? ($obj['About'] ?? '')); // ใส่ชื่อคอลัมน์คำอธิบายที่คุณใช้จริง
-    $logo     = trim($obj['Logo'] ?? ($obj['Logo URL'] ?? ''));     // ถ้ามีโลโก้เป็น URL
+    $logo     = trim($obj['✅ เสร็จสิ้นทั้งหมด | สำเร็จ 30 | ผิดพลาด 0'] ?? ($obj['Logo URL'] ?? ''));     // ถ้ามีโลโก้เป็น URL
 
     $website  = trim($obj['Website'] ?? '');
     $facebook = trim($obj['Facebook Page'] ?? '');
