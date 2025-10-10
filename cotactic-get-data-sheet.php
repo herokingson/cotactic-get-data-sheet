@@ -217,7 +217,7 @@ function cgsd_sheet_shortcode() {
         return strcasecmp($av, $bv);
     });
 
-    $html = '<div class="grid grid-cols-1 gap-5">';
+    $html = '<div class="grid grid-cols-1 !gap-5">';
     $current_letter = null;
 
     foreach ($rows as $r) {
