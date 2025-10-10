@@ -264,7 +264,6 @@ function cgsd_sheet_shortcode() {
     }
 
     $html .= '</div>';
-    $html = preg_replace('/\s+/', ' ', $html); // ✅ Minify
-    set_transient('cgsd_html_cache', $html, DAY_IN_SECONDS);
+
     return trim($html);
 }
