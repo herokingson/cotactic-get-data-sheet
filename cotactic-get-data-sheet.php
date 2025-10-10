@@ -207,6 +207,13 @@ function cgsd_sheet_shortcode() {
         return '<p class="text-red-700">ไม่พบคอลัมน์ "Agency Name" ในชีต</p>';
     }
 
+    // // ✅ จัดเรียงตามชื่อก่อน เพื่อให้หัวข้อหมวดเรียงถูกต้อง
+    // usort($rows, function($a, $b) use ($idxAgency) {
+    //     $av = isset($a[$idxAgency]) ? $a[$idxAgency] : '';
+    //     $bv = isset($b[$idxAgency]) ? $b[$idxAgency] : '';
+    //     return strcasecmp($av, $bv);
+    // });
+
     $html = '<div class="grid grid-cols-1 gap-5">';
     $current_letter = null;
 
