@@ -186,9 +186,8 @@ function cgsd_sheet_shortcode() {
         [],
         '6.5.0'
     );
-    wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
-    wp_enqueue_style('cgsd-fa', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css', [], '6.5.0');
 
+    wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
     wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', ['jquery'], '1.1', true);
     wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'assets/css/main.css', true);
 
@@ -260,7 +259,7 @@ function cgsd_sheet_shortcode() {
         // ---- Card เดิมของคุณ ----
         $html .= '
         <article class="group hover:shadow-lg transition-all relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-            <div class="flex w-1/3 md:w-[25%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+            <div class="flex w-1/3 md:w-1/6 min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
                 ' . (
                     $logo
                     ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
