@@ -265,5 +265,5 @@ function cgsd_sheet_shortcode() {
 
     $html .= '</div>';
 
-    return trim($html);
+    return $html;
 }
