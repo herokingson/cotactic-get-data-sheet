@@ -179,140 +179,85 @@ add_action('admin_init', function () {
 
 // ---------- Shortcode ----------
 function cgsd_sheet_shortcode() {
+    if (!wp_script_is('jquery', 'enqueued')) wp_enqueue_script('jquery');
 
-    wp_enqueue_style(
-        'cgsd-fa',
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
-        [],
-        '6.5.0'
-    );
-
-    wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
+    // ✅ โหลด CSS/JS แบบ local
+    wp_enqueue_style('cgsd-tailwind', plugin_dir_url(__FILE__) . 'assets/css/output.css', [], '1.1');
+    wp_enqueue_style('cgsd-fa', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css', [], '6.5.0');
+    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'assets/css/main.css', [], '1.1');
     wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', ['jquery'], '1.1', true);
-    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'assets/css/main.css', true);
 
     wp_localize_script('cgsd-js', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
 
-    $values = get_transient('cgsd_sheet_data');
+    // ✅ Cache HTML
+    $html_cache = get_transient('cgsd_html_cache');
+    if ($html_cache) return $html_cache;
 
+    $values = get_transient('cgsd_sheet_data');
     if (empty($values) || count($values) < 2) {
         return '<p class="text-yellow-700">No data available. Click fetch in admin.</p>';
     }
 
     $headers = $values[0];
     $rows = array_slice($values, 1);
-
-    // หา index ของคอลัมน์ที่เป็นชื่อเอเจนซี
     $idxAgency = array_search('Agency Name', $headers);
     if ($idxAgency === false) {
         return '<p class="text-red-700">ไม่พบคอลัมน์ "Agency Name" ในชีต</p>';
     }
 
-    // ✅ จัดเรียงตามชื่อก่อน เพื่อให้หัวข้อหมวดเรียงถูกต้อง
-    usort($rows, function($a, $b) use ($idxAgency) {
-        $av = isset($a[$idxAgency]) ? $a[$idxAgency] : '';
-        $bv = isset($b[$idxAgency]) ? $b[$idxAgency] : '';
-        return strcasecmp($av, $bv);
-    });
-
-    $html = '<div class="grid grid-cols-1 !gap-5">';
+    $html = '<div class="grid grid-cols-1 gap-5">';
     $current_letter = null;
 
     foreach ($rows as $r) {
-        // map row -> assoc
         $obj = [];
         foreach ($headers as $i => $h) {
             $obj[$h] = isset($r[$i]) ? $r[$i] : '';
         }
 
-        $agency   = trim($obj['Agency Name'] ?? '');
-        if ($agency === '') continue; // ข้ามแถวว่างๆ
+        $agency = trim($obj['Agency Name'] ?? '');
+        if ($agency === '') continue;
 
-        $desc     = trim($obj['Meta Description'] ?? ($obj['About'] ?? ''));
-        $logo     = trim($obj['URL Logo'] ?? ($obj['Logo URL'] ?? ''));
-        $website  = trim($obj['Website'] ?? '');
+        $desc = trim($obj['Meta Description'] ?? ($obj['About'] ?? ''));
+        $logo = trim($obj['URL Logo'] ?? ($obj['Logo URL'] ?? ''));
+        $website = trim($obj['Website'] ?? '');
         $facebook = trim($obj['Facebook Page'] ?? '');
-        $phone    = trim($obj['Phone Number'] ?? '');
+        $phone = trim($obj['Phone Number'] ?? '');
 
-        // ทำ URL ให้ครบ https:// และ validate
         foreach (['website','facebook'] as $k) {
             if (!empty($$k) && !preg_match('#^https?://#i', $$k)) { $$k = 'https://' . $$k; }
             if (!empty($$k) && !filter_var($$k, FILTER_VALIDATE_URL)) { $$k = ''; }
         }
 
-        // ตัวอักษรแรกของชื่อ (A–Z เท่านั้น, อย่างอื่นเป็น #)
         $first_letter = strtoupper(mb_substr($agency, 0, 1, 'UTF-8'));
-        if (!preg_match('/[A-Z]/', $first_letter)) { $first_letter = '0-9'; }
+        if (!preg_match('/[A-Z]/', $first_letter)) $first_letter = '0-9';
 
-        // ✅ แทรกหัวข้อหมวด เมื่อเจอหมวดใหม่
         if ($first_letter !== $current_letter) {
             $current_letter = $first_letter;
             $html .= '<h2 class="text-2xl font-bold mt-8 mb-2 text-[#0B284D] border-b border-gray-300 pb-1">'
-                   . 'ข้อมูลประเภทหมวด ' . esc_html($current_letter) . '</h2>';
+                   . esc_html($current_letter) . '</h2>';
         }
 
-        // อักษร fallback บนบล็อกโลโก้
         $initial = mb_strtoupper(mb_substr($agency, 0, 1, 'UTF-8'));
-
-        // ---- Card เดิมของคุณ ----
         $html .= '
-        <article class="group hover:shadow-lg transition-all relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-            <div class="flex w-1/3 md:w-[30%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+        <article class="group hover:shadow-lg transition-all flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
+            <div class="flex w-1/3 md:w-[25%] bg-[#0B284D] items-center justify-center">
                 ' . (
                     $logo
-                    ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
-                    : '<div class="w-full h-full rounded-xl bg-white/10 text-white font-semibold flex items-center justify-center text-xl">'
-                        . esc_html($initial) .
-                      '</div>'
+                    ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" loading="lazy" class="w-full !h-full object-cover" />'
+                    : '<div class="w-full h-full flex items-center justify-center text-white text-xl">' . esc_html($initial) . '</div>'
                 ) . '
             </div>
-
-            <div class="hidden sm:block w-px bg-gray-200"></div>
-
             <div class="flex-1 p-4 md:p-6">
-                <h3 class="text-[24px] font-bold text-[#0B284D]">' . esc_html($agency) . '</h3>
-                ' . ( $desc ? '<p class="md:mt-2 text-[16px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
-
-                <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-6 gap-y-3 text-sm">
-                    ' . ( $website ? '
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
-                            <i class="fa-solid fa-globe text-[18px]" aria-hidden="true"></i>
-                            <span class="sr-only">Website</span>
-                        </span>
-                        <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[16px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a>
-                    </div>' : '' ) . '
-
-                    ' . ( $facebook ? '
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
-                            <i class="fa-brands fa-facebook-f text-[18px]" aria-hidden="true"></i>
-                            <span class="sr-only">Facebook</span>
-                        </span>
-                        <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[16px] font-sarabun transition-all md:block hidden">' . esc_html($facebook) . '</a>
-                    </div>' : '' ) . '
-
-                    ' . ( $phone ? '
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-md text-[#173A63]">
-                            <i class="fa-solid fa-mobile-screen text-[18px]" aria-hidden="true"></i>
-                            <span class="sr-only">Phone</span>
-                        </span>
-                        <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '">
-                            <span class="text-[#0B284D] hover:opacity-80 text-[16px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</span>
-                        </a>
-                    </div>' : '' ) . '
-                </div>
+                <h3 class="text-[22px] font-bold text-[#0B284D]">' . esc_html($agency) . '</h3>
+                ' . ($desc ? '<p class="text-[15px] text-gray-700 mt-1">' . esc_html($desc) . '</p>' : '') . '
             </div>
         </article>';
     }
 
     $html .= '</div>';
-
-    return $html;
+    $html = preg_replace('/\s+/', ' ', $html); // ✅ Minify
+    set_transient('cgsd_html_cache', $html, DAY_IN_SECONDS);
+    return trim($html);
 }
-add_shortcode('google_sheets_data', 'cgsd_sheet_shortcode');
