@@ -1,3 +1,14 @@
+(function () {
+  const _add = window.addEventListener;
+  window.addEventListener = function (type, listener, opts) {
+    if (type === "scroll") {
+      if (typeof opts === "boolean") opts = { passive: true };
+      else if (typeof opts === "object") opts.passive = true;
+    }
+    _add.call(this, type, listener, opts);
+  };
+})();
+
 document.addEventListener("DOMContentLoaded", async function () {
   const container = document.getElementById("cgsd-sheet-container");
   if (!container) return;
