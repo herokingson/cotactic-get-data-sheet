@@ -265,32 +265,32 @@ function cgsd_sheet_shortcode() {
                 <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-2 gap-y-3 text-sm">
                     ' . ( $website ? '
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
+                        <span class="text-[#0B284D]">
                             <i class="fa-solid fa-globe text-[14px]" aria-hidden="true"></i>
                             <span class="sr-only">Website</span>
                         </span>
                         <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[14px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a>
+                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a>
                     </div>' : '' ) . '
 
                     ' . ( $facebook ? '
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
+                        <span class="text-[#0B284D]">
                             <i class="fa-brands fa-facebook-f text-[14px]" aria-hidden="true"></i>
                             <span class="sr-only">Facebook</span>
                         </span>
                         <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[14px] font-sarabun transition-all md:block hidden">' . esc_html($facebook) . '</a>
+                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($facebook) . '</a>
                     </div>' : '' ) . '
 
                     ' . ( $phone ? '
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex w-7 h-7 items-center justify-center rounded-md text-[#173A63]">
+                        <span class="text-[#173A63]">
                             <i class="fa-solid fa-mobile-screen text-[14px]" aria-hidden="true"></i>
                             <span class="sr-only">Phone</span>
                         </span>
                         <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '">
-                            <span class="text-[#0B284D] hover:opacity-80 text-[14px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</span>
+                            <span class="text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</span>
                         </a>
                     </div>' : '' ) . '
                 </div>
