@@ -325,6 +325,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
     return $tag;
 }, 10, 2);
 
-add_action('wp_head', function() use ($plugin_url, $version) {
+add_action('wp_head', function() {
+    $plugin_url = trailingslashit(plugin_dir_url(__FILE__));
+    $version    = '1.2';
     echo '<link rel="preload" href="' . esc_url($plugin_url . 'dist/css/app.css?ver=' . $version) . '" as="style">';
 }, 1);
