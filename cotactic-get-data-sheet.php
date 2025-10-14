@@ -160,6 +160,9 @@ add_action('admin_init', function () {
 // ---------- Shortcode ----------
 function cgsd_sheet_shortcode() {
    if (!wp_script_is('jquery', 'enqueued')) wp_enqueue_script('jquery');
+    $plugin_url = trailingslashit(plugin_dir_url(__FILE__));
+    $version    = '1.2'; // เวอร์ชันใหม่ เพื่อให้ cache browser รีเฟรชอัตโนมัติ
+
     wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', '1.1', true);
 
     wp_enqueue_style(
