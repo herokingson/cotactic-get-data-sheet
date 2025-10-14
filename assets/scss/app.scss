@@ -14,3 +14,10 @@
 .font-cotactic {
   font-family: 'Cotactic Font', sans-serif;
 }
+
+.elementor *,
+.elementor-section *,
+.elementor-widget-container * {
+  transition-property: all;
+  animation: inherit;
+}
