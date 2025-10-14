@@ -262,11 +262,11 @@ function cgsd_sheet_shortcode() {
                 <h3 class="text-[24px] font-bold text-[#0B284D]">' . esc_html($agency) . '</h3>
                 ' . ( $desc ? '<p class="md:mt-2 text-[16px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden">' . esc_html($desc) . '</p>' : '' ) . '
 
-                <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-6 gap-y-3 text-sm">
+                <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-2 gap-y-3 text-sm">
                     ' . ( $website ? '
                     <div class="flex items-center gap-2">
                         <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
-                            <i class="fa-solid fa-globe text-[18px]" aria-hidden="true"></i>
+                            <i class="fa-solid fa-globe text-[16px]" aria-hidden="true"></i>
                             <span class="sr-only">Website</span>
                         </span>
                         <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
@@ -276,7 +276,7 @@ function cgsd_sheet_shortcode() {
                     ' . ( $facebook ? '
                     <div class="flex items-center gap-2">
                         <span class="inline-flex w-7 h-7 items-center justify-center rounded-full text-[#0B284D]">
-                            <i class="fa-brands fa-facebook-f text-[18px]" aria-hidden="true"></i>
+                            <i class="fa-brands fa-facebook-f text-[16px]" aria-hidden="true"></i>
                             <span class="sr-only">Facebook</span>
                         </span>
                         <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
@@ -286,7 +286,7 @@ function cgsd_sheet_shortcode() {
                     ' . ( $phone ? '
                     <div class="flex items-center gap-2">
                         <span class="inline-flex w-7 h-7 items-center justify-center rounded-md text-[#173A63]">
-                            <i class="fa-solid fa-mobile-screen text-[18px]" aria-hidden="true"></i>
+                            <i class="fa-solid fa-mobile-screen text-[16px]" aria-hidden="true"></i>
                             <span class="sr-only">Phone</span>
                         </span>
                         <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '">
