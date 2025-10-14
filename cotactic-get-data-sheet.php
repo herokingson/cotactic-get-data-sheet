@@ -160,10 +160,6 @@ add_action('admin_init', function () {
 // ---------- Shortcode ----------
 function cgsd_sheet_shortcode() {
    if (!wp_script_is('jquery', 'enqueued')) wp_enqueue_script('jquery');
-    $plugin_url = trailingslashit(plugin_dir_url(__FILE__));
-    $version    = '1.2'; // เวอร์ชันใหม่ เพื่อให้ cache browser รีเฟรชอัตโนมัติ
-
-    wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', '1.1', true);
 
     wp_enqueue_style(
         'cgsd-fa',
@@ -173,22 +169,15 @@ function cgsd_sheet_shortcode() {
     );
 
     // wp_enqueue_script('cgsd-tailwind', 'https://cdn.tailwindcss.com', [], null, true);
-     wp_enqueue_style(
-        'cgsd-css',
-        $plugin_url . 'dist/css/app.css',
-        [],
-        $version,
-        'all'
-    );
-
-    // --------- JS (โหลดท้าย body + defer) ---------
-    wp_enqueue_script(
-        'cgsd-js',
-        $plugin_url . 'dist/js/cgsd.js',
-        ['jquery'],
-        $version,
-        true // true = โหลดท้าย body
-    );
+    wp_enqueue_script('cgsd-js', plugin_dir_url(__FILE__) . 'dist/js/cgsd.js', ['jquery'], '1.1', true);
+    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'dist/css/app.css', true);
+    // เพิ่ม defer ให้สคริปต์นี้
+    add_filter('script_loader_tag', function ($tag, $handle) {
+        if ('cgsd-js' === $handle) {
+            return str_replace(' src', ' defer src', $tag);
+        }
+        return $tag;
+    }, 10, 2);
 
     wp_localize_script('cgsd-js', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
@@ -315,18 +304,3 @@ function cgsd_sheet_shortcode() {
     return $html;
 }
 add_shortcode('google_sheets_data', 'cgsd_sheet_shortcode');
-
-// เพิ่ม defer ให้เฉพาะสคริปต์ของปลั๊กอินนี้
-add_filter('script_loader_tag', function ($tag, $handle) {
-    if ('cgsd-js' === $handle) {
-        // เพิ่ม defer และ async เพื่อให้โหลดไม่บล็อกหน้า
-        return str_replace('<script ', '<script defer ', $tag);
-    }
-    return $tag;
-}, 10, 2);
-
-add_action('wp_head', function() {
-    $plugin_url = trailingslashit(plugin_dir_url(__FILE__));
-    $version    = '1.2';
-    echo '<link rel="preload" href="' . esc_url($plugin_url . 'dist/css/app.css?ver=' . $version) . '" as="style">';
-}, 1);
