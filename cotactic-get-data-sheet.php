@@ -246,7 +246,7 @@ function cgsd_sheet_shortcode() {
         // ---- Card เดิมของคุณ ----
         $html .= '
         <article class="group hover:shadow-lg transition-all relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-            <div class="flex w-1/3 md:w-[25%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+            <div class="flex w-1/3 md:w-[22%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
                 ' . (
                     $logo
                     ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
