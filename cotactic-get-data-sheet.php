@@ -249,7 +249,7 @@ function cgsd_sheet_shortcode() {
             <div class="flex w-1/3 md:w-[20%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
                 ' . (
                     $logo
-                    ? '<img src="' . esc_url($logo) . '" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
+                    ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-cover drop-shadow" />'
                     : '<div class="w-full h-full rounded-xl bg-white/10 text-white font-semibold flex items-center justify-center text-xl">'
                         . esc_html($initial) .
                       '</div>'
