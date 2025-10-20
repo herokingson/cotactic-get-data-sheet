@@ -168,16 +168,13 @@ function cgsd_sheet_shortcode() {
         '6.5.0'
     );
 
-    if (did_action('elementor/frontend/after_register_scripts')) {
-        // ✅ safe to load after Elementor
-        wp_enqueue_script(
-            'cgsd-js',
-            plugin_dir_url(__FILE__) . 'dist/js/cgsd.js',
-            ['jquery', 'elementor-frontend'],
-            '1.1',
-            true
-        );
-    }
+    wp_enqueue_script(
+    'cgsd-js',
+    plugin_dir_url(__FILE__) . 'dist/js/cgsd.js',
+    ['jquery', 'elementor-frontend'], // ✅ โหลดหลัง Elementor
+    '1.1',
+    true
+    );
     wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'dist/css/app.css', true);
     // เพิ่ม defer ให้สคริปต์นี้
     add_filter('script_loader_tag', function ($tag, $handle) {
@@ -312,3 +309,16 @@ function cgsd_sheet_shortcode() {
     return $html;
 }
 add_shortcode('google_sheets_data', 'cgsd_sheet_shortcode');
+
+add_action('wp_enqueue_scripts', function() {
+    if (did_action('elementor/frontend/after_register_scripts')) {
+        // ✅ safe to load after Elementor
+        wp_enqueue_script(
+            'cgsd-js',
+            plugin_dir_url(__FILE__) . 'dist/js/cgsd.js',
+            ['jquery', 'elementor-frontend'],
+            '1.1',
+            true
+        );
+    }
+});
