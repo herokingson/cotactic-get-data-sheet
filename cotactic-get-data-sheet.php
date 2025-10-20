@@ -259,7 +259,7 @@ function cgsd_sheet_shortcode() {
             <div class="hidden sm:block w-px bg-gray-200"></div>
 
             <div class="flex-1 px-2 pt-[2px]">
-                <h3 class="text-[12px] font-bold font-sarabun mb-0 text-[#0B284D]">' . esc_html($agency) . '</h3>
+                <h3 class="text-[12px] font-bold font-sarabun !mb-0 text-[#0B284D]">' . esc_html($agency) . '</h3>
                 ' . ( $desc ? '<p class="md:mt-2 text-[10px] font-sarabun leading-6 text-gray-900 h-[50px] max-h-[50px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '' ) . '
 
                 <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-2 text-sm">
