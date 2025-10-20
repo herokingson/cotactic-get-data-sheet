@@ -322,3 +322,19 @@ add_action('wp_enqueue_scripts', function() {
         );
     }
 });
+
+add_action('wp_head', function() {
+echo <<<HTML
+<script>
+if (window.addEventListener) {
+  const originalAdd = window.addEventListener;
+  window.addEventListener = function(type, listener, options) {
+    if (type === "scroll" && (!options || options.passive === undefined)) {
+      options = options === undefined ? { passive: true } : Object.assign({}, options, { passive: true });
+    }
+    return originalAdd.call(this, type, listener, options);
+  };
+}
+</script>
+HTML;
+});
