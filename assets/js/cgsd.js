@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log("Using cached Google Sheet data ✅");
     } else {
       const res = await fetch(url, { cache: "no-cache" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
       localStorage.setItem(cacheKey, JSON.stringify(data));
       localStorage.setItem(cacheKey + "_time", now);
