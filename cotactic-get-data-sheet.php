@@ -252,7 +252,7 @@ function cgsd_sheet_shortcode() {
         // ---- Card เดิมของคุณ ----
         $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden">
-            <div class="flex w-1/3 md:w-[15%] min-w-[100px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+            <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
                 ' . (
                     $logo
                     ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full !h-full object-contain drop-shadow" />'
@@ -264,7 +264,7 @@ function cgsd_sheet_shortcode() {
 
             <div class="hidden sm:block w-px bg-gray-200"></div>
 
-            <div class="flex-1 px-2 py-[12px]">
+            <div class="flex-1 px-3 py-[12px]">
                 <h3 class="text-[14px] font-bold font-sarabun !mb-[5px] text-[#0B284D]">' . esc_html($agency) . '</h3>
                 ' . ( $desc ? '<p class="md:mt-2 !text-[14px] font-sarabun leading-4 text-gray-900 h-[30px] max-h-[30px] md:h-[35px] md:max-h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '' ) . '
 
