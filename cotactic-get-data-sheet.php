@@ -168,22 +168,6 @@ function cgsd_sheet_shortcode() {
         '6.5.0'
     );
 
-    wp_enqueue_script(
-    'cgsd-js',
-    plugin_dir_url(__FILE__) . 'dist/js/cgsd.js',
-    ['jquery', 'elementor-frontend'], // ✅ โหลดหลัง Elementor
-    '1.1',
-    true
-    );
-    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'dist/css/app.css', true);
-    // เพิ่ม defer ให้สคริปต์นี้
-    add_filter('script_loader_tag', function ($tag, $handle) {
-        if ('cgsd-js' === $handle) {
-            return str_replace(' src', ' defer src', $tag);
-        }
-        return $tag;
-    }, 10, 2);
-
     wp_localize_script('cgsd-js', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
@@ -223,7 +207,7 @@ function cgsd_sheet_shortcode() {
         $agency   = trim($obj['Agency Name'] ?? '');
         if ($agency === '') continue; // ข้ามแถวว่างๆ
 
-        $desc     = trim($obj['Meta Description'] ?? ($obj['About'] ?? ''));
+        $desc     = trim($obj['Meta Description (EN)'] ?? ($obj['Meta Description (EN)'] ?? ''));
         $logo     = trim($obj['URL Logo'] ?? ($obj['Logo URL'] ?? ''));
         $website  = trim($obj['Website'] ?? '');
         $facebook = trim($obj['Facebook Page'] ?? '');
@@ -265,8 +249,8 @@ function cgsd_sheet_shortcode() {
             <div class="hidden sm:block w-px bg-gray-200"></div>
 
             <div class="flex-1 px-2 py-[12px]">
-                <h3 class="text-[12px] font-bold font-sarabun !mb-0 text-[#0B284D]">' . esc_html($agency) . '</h3>
-                ' . ( $desc ? '<p class="md:mt-2 !text-[10px] font-sarabun leading-4 text-gray-900 h-[30px] max-h-[30px] md:h-[35px] md:max-h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '' ) . '
+                <h3 class="text-[14px] font-bold font-sarabun !mb-0 text-[#0B284D]">' . esc_html($agency) . '</h3>
+                ' . ( $desc ? '<p class="md:mt-2 !text-[14px] font-sarabun leading-4 text-gray-900 h-[30px] max-h-[30px] md:h-[35px] md:max-h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '' ) . '
 
                 <div class="mt-1 md:mt-4 flex md:flex-wrap items-center gap-x-2 md:gap-x-2 text-sm">
                     ' . ( $website ? '
@@ -276,7 +260,7 @@ function cgsd_sheet_shortcode() {
                             <span class="sr-only">Website</span>
                         </span>
                         <a href="' . esc_url($website) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[10px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a>
+                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[12px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a>
                     </div>' : '' ) . '
 
                     ' . ( $facebook ? '
@@ -286,7 +270,7 @@ function cgsd_sheet_shortcode() {
                             <span class="sr-only">Facebook</span>
                         </span>
                         <a href="' . esc_url($facebook) . '" target="_blank" rel="noopener"
-                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[10px] font-sarabun transition-all md:block hidden">' . esc_html($facebook) . '</a>
+                           class="underline break-all text-[#0B284D] hover:opacity-80 text-[12px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a>
                     </div>' : '' ) . '
 
                     ' . ( $phone ? '
@@ -296,7 +280,7 @@ function cgsd_sheet_shortcode() {
                             <span class="sr-only">Phone</span>
                         </span>
                         <a href="tel:' . esc_attr(preg_replace("/\D+/", "", $phone)) . '">
-                            <span class="text-[#0B284D] hover:opacity-80 text-[10px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</span>
+                            <span class="text-[#0B284D] hover:opacity-80 text-[12px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</span>
                         </a>
                     </div>' : '' ) . '
                 </div>
@@ -321,20 +305,4 @@ add_action('wp_enqueue_scripts', function() {
             true
         );
     }
-});
-
-add_action('wp_head', function() {
-echo <<<HTML
-<script>
-if (window.addEventListener) {
-  const originalAdd = window.addEventListener;
-  window.addEventListener = function(type, listener, options) {
-    if (type === "scroll" && (!options || options.passive === undefined)) {
-      options = options === undefined ? { passive: true } : Object.assign({}, options, { passive: true });
-    }
-    return originalAdd.call(this, type, listener, options);
-  };
-}
-</script>
-HTML;
 });
