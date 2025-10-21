@@ -168,6 +168,22 @@ function cgsd_sheet_shortcode() {
         '6.5.0'
     );
 
+    wp_enqueue_script(
+    'cgsd-js',
+    plugin_dir_url(__FILE__) . 'dist/js/cgsd.js',
+    ['jquery', 'elementor-frontend'], // ✅ โหลดหลัง Elementor
+    '1.1',
+    true
+    );
+    wp_enqueue_style('cgsd-css', plugin_dir_url(__FILE__) . 'dist/css/app.css', true);
+    // เพิ่ม defer ให้สคริปต์นี้
+    add_filter('script_loader_tag', function ($tag, $handle) {
+        if ('cgsd-js' === $handle) {
+            return str_replace(' src', ' defer src', $tag);
+        }
+        return $tag;
+    }, 10, 2);
+
     wp_localize_script('cgsd-js', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
