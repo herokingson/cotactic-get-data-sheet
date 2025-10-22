@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         : "0-9";
       if (firstLetter !== currentLetter) {
         currentLetter = firstLetter;
-        html += `<h3 class="text-2xl font-bold mt-8 mb-2 text-[#0B284D] border-b border-gray-300 pb-1 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h3>`;
+        html += `<h3 class="text-2xl font-bold mt-2 mb-1 text-[#0B284D] border-b border-gray-300 pb-1 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h3>`;
       }
 
       const initial = agency[0].toUpperCase();
