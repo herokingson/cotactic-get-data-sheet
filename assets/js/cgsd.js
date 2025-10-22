@@ -183,10 +183,10 @@ function buildPPTocManually() {
 
   if (!listWrap) return;
   listWrap.innerHTML = "";
-  console.log(h);
   let idx = 0;
   heads.forEach((h) => {
     if (!h.id) h.id = `pp-toc__heading-${idx++}`;
+    console.log(h);
     const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
     const li = document.createElement("li");
     li.className = `pp-toc__list-item level-${level}`;
