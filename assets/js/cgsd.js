@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // เรียงตามชื่อ A-Z
     rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
-    let html = ""; // ✅ ประกาศตรงนี้
+    let html = "<div class='cgsd-tailwind'>"; // ✅ ประกาศตรงนี้
     let currentLetter = null;
 
     rows.forEach((r) => {
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </article>`;
     });
-    // html += "</div>"; // ✅ ปิด tag
+    html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
 
     setTimeout(() => {
