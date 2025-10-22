@@ -114,9 +114,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       const $toc = jQuery(".pp-table-of-contents");
       if ($toc.length) {
         console.log("🧹 Clearing old TOC list...");
+        // เคลียร์เนื้อหาภายใน list เดิม
         $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
       }
 
+      // เรียกให้ Elementor โหลด widget PowerPack TOC ใหม่
       if (window.elementorFrontend && elementorFrontend.hooks) {
         console.log("🔁 Rebuilding PowerPack TOC...");
         elementorFrontend.hooks.doAction(
@@ -125,7 +127,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           jQuery
         );
       }
-    }, 800);
+
+      // ส่ง event DOMSubtreeModified (สำหรับ version ใหม่ที่ใช้ MutationObserver)
+      setTimeout(() => {
+        const toc = document.querySelector(".pp-table-of-contents");
+        if (toc) {
+          const evt = new Event("DOMSubtreeModified");
+          toc.dispatchEvent(evt);
+        }
+      }, 400);
+    }, 1800); // ✅ รอให้ <h3> สร้างเสร็จก่อนค่อย rebuild
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
