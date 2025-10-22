@@ -115,23 +115,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+const CONTAINER_SEL = ".cgsd-tailwind";
 const TOC_WRAPPER = "#pp-toc-85227a9";
 
 function buildPPTocManually() {
-  // ตรวจหา container อีกครั้งตอนเริ่มทำงาน
-  const containerSel = document.querySelector(".content-blog .cgsd-tailwind")
-    ? ".content-blog .cgsd-tailwind"
-    : ".cgsd-tailwind";
-
   const toc = document.querySelector(TOC_WRAPPER);
-  const host = document.querySelector(containerSel);
+  const host = document.querySelector(CONTAINER_SEL);
 
   if (!toc || !host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container", {
-      toc,
-      host,
-      containerSel,
-    });
+    console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc, host });
     return;
   }
 
@@ -143,13 +135,24 @@ function buildPPTocManually() {
     return;
   }
 
-  const listWrap =
-    toc.querySelector(".pp-toc__list-wrapper") ||
-    toc.querySelector(".pp-toc__list") ||
-    toc.querySelector("ul");
+  // ถ้ายังเป็น spinner ให้แทนที่ด้วย list ใหม่
+  let listWrap = toc.querySelector(".pp-toc__list, ul");
+  if (!listWrap) {
+    const body = toc.querySelector(".pp-toc__body");
+    if (body) {
+      // ลบ spinner container ออกก่อน
+      const spinner = body.querySelector(".pp-toc__spinner-container");
+      if (spinner) spinner.remove();
+
+      // ✅ สร้าง ul ใหม่
+      listWrap = document.createElement("ul");
+      listWrap.className = "pp-toc__list";
+      body.appendChild(listWrap);
+    }
+  }
 
   if (!listWrap) {
-    console.warn("TOC fallback: ไม่พบ .pp-toc__list-wrapper");
+    console.warn("TOC fallback: ไม่พบตำแหน่งแทรก TOC list");
     return;
   }
 
@@ -175,7 +178,23 @@ function buildPPTocManually() {
   });
 
   console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
+
+  // เพิ่ม smooth scroll
+  listWrap.querySelectorAll("a[href^='#']").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute("href"));
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 }
 
-// หน่วงเวลาเพิ่มขึ้นเผื่อ DOM โหลดไม่ทัน
-setTimeout(buildPPTocManually, 3000);
+// ✅ รอให้ spinner หายก่อน แล้วค่อยทำงาน
+const waitForTOCSpinner = setInterval(() => {
+  const spinner = document.querySelector(
+    `${TOC_WRAPPER} .pp-toc__spinner-container`
+  );
+  if (spinner) return; // ยังโหลดอยู่
+  clearInterval(waitForTOCSpinner);
+  setTimeout(buildPPTocManually, 800); // เผื่อดีเลย์นิดนึง
+}, 300);
