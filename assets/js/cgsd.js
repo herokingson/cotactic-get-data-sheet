@@ -115,14 +115,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-const CONTAINER_SEL = ".cgsd-tailwind"; // ตรงกับที่มี h3
-const TOC_WRAPPER = "#pp-toc-85227a9"; // 👈 เปลี่ยนเป็น id ของ widget ที่อยู่ใน content
+const TOC_WRAPPER = "#pp-toc-85227a9";
 
 function buildPPTocManually() {
+  // ตรวจหา container อีกครั้งตอนเริ่มทำงาน
+  const containerSel = document.querySelector(".content-blog .cgsd-tailwind")
+    ? ".content-blog .cgsd-tailwind"
+    : ".cgsd-tailwind";
+
   const toc = document.querySelector(TOC_WRAPPER);
-  const host = document.querySelector(CONTAINER_SEL);
+  const host = document.querySelector(containerSel);
+
   if (!toc || !host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc, host });
+    console.warn("TOC fallback: ไม่พบ toc หรือ container", {
+      toc,
+      host,
+      containerSel,
+    });
     return;
   }
 
@@ -138,6 +147,7 @@ function buildPPTocManually() {
     toc.querySelector(".pp-toc__list-wrapper") ||
     toc.querySelector(".pp-toc__list") ||
     toc.querySelector("ul");
+
   if (!listWrap) {
     console.warn("TOC fallback: ไม่พบ .pp-toc__list-wrapper");
     return;
@@ -145,6 +155,7 @@ function buildPPTocManually() {
 
   listWrap.innerHTML = "";
   let idx = 0;
+
   heads.forEach((h) => {
     if (!h.id) h.id = `pp-toc__heading-${idx++}`;
     const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
@@ -166,5 +177,5 @@ function buildPPTocManually() {
   console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
 }
 
-// รอให้ heading ถูก inject เสร็จก่อน
-setTimeout(buildPPTocManually, 2500);
+// หน่วงเวลาเพิ่มขึ้นเผื่อ DOM โหลดไม่ทัน
+setTimeout(buildPPTocManually, 3000);
