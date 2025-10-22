@@ -183,7 +183,7 @@ function buildPPTocManually() {
 
   if (!listWrap) return;
   listWrap.innerHTML = "";
-
+  console.log(h);
   let idx = 0;
   heads.forEach((h) => {
     if (!h.id) h.id = `pp-toc__heading-${idx++}`;
