@@ -115,57 +115,75 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// ✅ ฟังก์ชัน rebuild PowerPack TOC ที่ตรงกับ class จริง (.pp-toc)
-function rebuildPowerPackTOC() {
-  const $toc = jQuery(".pp-toc");
-  if (!$toc.length) {
-    console.warn("⚠️ PowerPack TOC (.pp-toc) not found yet");
+// === Manual fallback: สร้าง TOC ให้ PowerPack เอง ===
+// ปรับ selector ตรงนี้ให้ตรงกับที่ตั้งใน widget
+const CONTAINER_SEL = ".content-blog .cgsd-tailwind"; // ที่มี <h2>/<h3> จาก Google Sheet
+const TOC_WRAPPER = ".pp-toc"; // ตัว widget PowerPack
+
+function buildPPTocManually() {
+  const toc = document.querySelector(TOC_WRAPPER);
+  const host = document.querySelector(CONTAINER_SEL);
+  if (!toc || !host) {
+    console.warn("TOC fallback: ไม่พบ toc หรือ container");
     return;
   }
 
-  console.log("🔁 Rebuilding PowerPack TOC (.pp-toc) ...");
-
-  // ล้าง list เดิมก่อน
-  $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
-
-  // ใช้วิธีที่ปลอดภัยในการ re-init widget
-  if (window.elementorFrontend && elementorFrontend.elementsHandler) {
-    $toc.each(function () {
-      const $widget = jQuery(this);
-      elementorFrontend.elementsHandler.runReadyTrigger($widget);
-    });
+  // หารายการหัวข้อ (ตามที่คุณตั้งใน Anchors by Tags)
+  const heads = host.querySelectorAll("h2, h3");
+  if (!heads.length) {
+    console.warn("TOC fallback: ไม่พบ h2/h3 ใน container");
+    return;
   }
 
-  // trigger DOM event เผื่อ MutationObserver ภายใน widget
-  setTimeout(() => {
-    const toc = document.querySelector(".pp-toc");
-    if (toc) {
-      const evt = new Event("DOMSubtreeModified");
-      toc.dispatchEvent(evt);
-      console.log("📡 Triggered DOMSubtreeModified for PowerPack TOC");
-    }
-  }, 500);
-}
+  // ที่ใส่รายการของ PowerPack
+  const listWrap =
+    toc.querySelector(".pp-toc__list-wrapper") ||
+    toc.querySelector(".pp-toc__list") ||
+    toc.querySelector("ul");
+  if (!listWrap) {
+    console.warn("TOC fallback: ไม่พบ .pp-toc__list-wrapper");
+    return;
+  }
 
-// ✅ รอให้ widget โผล่มาใน DOM แล้วค่อย rebuild
-function waitForPowerPackTOC() {
-  const observer = new MutationObserver(() => {
-    const toc = document.querySelector(".pp-toc");
-    if (toc) {
-      observer.disconnect();
-      rebuildPowerPackTOC();
+  // ล้างรายการเดิม
+  listWrap.innerHTML = "";
+
+  // สร้างรายการใหม่
+  let idx = 0;
+  heads.forEach((h) => {
+    if (!h.id) {
+      h.id = `pp-toc__heading-anchor-${idx++}`;
     }
+    const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
+    const li = document.createElement("li");
+    li.className = `pp-toc__list-item level-${level}`;
+
+    const wrap = document.createElement("div");
+    wrap.className = "pp-toc__list-item-text-wrapper";
+
+    const a = document.createElement("a");
+    a.href = `#${h.id}`;
+    a.className = `pp-toc__list-item-text ${
+      level === 0 ? "pp-toc__top-level" : ""
+    }`;
+    a.textContent = h.textContent.trim();
+
+    wrap.appendChild(a);
+    li.appendChild(wrap);
+    listWrap.appendChild(li);
   });
 
-  observer.observe(document.body, { childList: true, subtree: true });
+  // smooth scroll แบบง่าย (ถ้าต้องการ)
+  listWrap.querySelectorAll("a[href^='#']").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute("href"));
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  console.log("✅ TOC fallback: สร้างรายการให้ PowerPack เรียบร้อย");
 }
 
-// ✅ เรียกหลังจาก render Google Sheet เสร็จ
-setTimeout(() => {
-  if (document.querySelector(".pp-toc")) {
-    rebuildPowerPackTOC();
-  } else {
-    console.log("⌛ Waiting for PowerPack TOC (.pp-toc) to appear...");
-    waitForPowerPackTOC();
-  }
-}, 1500);
+// เรียกหลัง render เสร็จ/หลัง trigger ต่าง ๆ
+setTimeout(buildPPTocManually, 1200);
