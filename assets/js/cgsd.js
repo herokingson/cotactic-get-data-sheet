@@ -126,7 +126,7 @@ function buildPPTocManually() {
     console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc });
     return;
   } else if (!host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container", { host });
+    console.warn("TOC fallback: ไม่พบ host หรือ container", { host });
     return;
   }
 
