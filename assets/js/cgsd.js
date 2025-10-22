@@ -115,6 +115,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+window.elementorFrontend = window.elementorFrontend || {};
+if (typeof window.elementorFrontend.waypoint !== "function") {
+  console.log("⚙️ Patching missing elementorFrontend.waypoint()");
+  window.elementorFrontend.waypoint = function () {
+    return { destroy: () => {} };
+  };
+}
+
 const CONTAINER_SEL = ".cgsd-tailwind";
 const TOC_WRAPPER = "#pp-toc-85227a9";
 
