@@ -109,71 +109,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
-
-    setTimeout(() => {
-      const $toc = jQuery(".pp-table-of-contents");
-      if (!$toc.length) {
-        console.warn("⚠️ No .pp-table-of-contents found");
-        return;
-      }
-
-      console.log("🔁 Rebuilding PowerPack TOC safely...");
-
-      // ล้าง list เดิมกัน cache
-      $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
-
-      // ✅ วิธีที่ถูกต้อง: ใช้ Elementor elementsHandler เพื่อ re-init widget พร้อม settings
-      if (window.elementorFrontend && elementorFrontend.elementsHandler) {
-        $toc.each(function () {
-          const $this = jQuery(this);
-          elementorFrontend.elementsHandler.runReadyTrigger($this);
-        });
-      } else {
-        console.warn("⚠️ elementorFrontend.elementsHandler not available");
-      }
-
-      // ✅ สำหรับ PowerPack version ใหม่ (กัน MutationObserver ไม่ trigger)
-      const toc = document.querySelector(".pp-table-of-contents");
-      if (toc) {
-        setTimeout(() => {
-          const evt = new Event("DOMSubtreeModified");
-          toc.dispatchEvent(evt);
-          console.log("📡 Triggered DOMSubtreeModified for TOC");
-        }, 500);
-      }
-    }, 1500);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
   }
 });
 
-function refreshPPToc() {
-  const $toc = jQuery(".pp-table-of-contents");
-  if (!$toc.length) return;
-
-  // ล้างรายการเดิมออกก่อน
-  $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
-
-  // ให้ Elementor re-init widget
-  if (window.elementorFrontend && elementorFrontend.hooks) {
-    console.log("🔁 Force rebuild PowerPack TOC (deep)");
-    elementorFrontend.hooks.doAction(
-      "frontend/element_ready/pp-table-of-contents.default",
-      $toc,
-      jQuery
-    );
+// ✅ ฟังก์ชัน rebuild PowerPack TOC ที่ตรงกับ class จริง (.pp-toc)
+function rebuildPowerPackTOC() {
+  const $toc = jQuery(".pp-toc");
+  if (!$toc.length) {
+    console.warn("⚠️ PowerPack TOC (.pp-toc) not found yet");
+    return;
   }
 
-  // ถ้ายังไม่เจอ headings → trigger DOM Mutation
+  console.log("🔁 Rebuilding PowerPack TOC (.pp-toc) ...");
+
+  // ล้าง list เดิมก่อน
+  $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
+
+  // ใช้วิธีที่ปลอดภัยในการ re-init widget
+  if (window.elementorFrontend && elementorFrontend.elementsHandler) {
+    $toc.each(function () {
+      const $widget = jQuery(this);
+      elementorFrontend.elementsHandler.runReadyTrigger($widget);
+    });
+  }
+
+  // trigger DOM event เผื่อ MutationObserver ภายใน widget
   setTimeout(() => {
-    const toc = document.querySelector(".pp-table-of-contents");
+    const toc = document.querySelector(".pp-toc");
     if (toc) {
       const evt = new Event("DOMSubtreeModified");
       toc.dispatchEvent(evt);
+      console.log("📡 Triggered DOMSubtreeModified for PowerPack TOC");
     }
-  }, 300);
+  }, 500);
 }
 
-// ✅ เรียกหลัง render เสร็จ
-setTimeout(refreshPPToc, 1500);
+// ✅ รอให้ widget โผล่มาใน DOM แล้วค่อย rebuild
+function waitForPowerPackTOC() {
+  const observer = new MutationObserver(() => {
+    const toc = document.querySelector(".pp-toc");
+    if (toc) {
+      observer.disconnect();
+      rebuildPowerPackTOC();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// ✅ เรียกหลังจาก render Google Sheet เสร็จ
+setTimeout(() => {
+  if (document.querySelector(".pp-toc")) {
+    rebuildPowerPackTOC();
+  } else {
+    console.log("⌛ Waiting for PowerPack TOC (.pp-toc) to appear...");
+    waitForPowerPackTOC();
+  }
+}, 1500);
