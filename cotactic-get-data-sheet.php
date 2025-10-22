@@ -190,3 +190,13 @@ function cgsd_ajax_shortcode() {
     return '<div id="cgsd-container" class="text-center text-gray-500">Loading Google Sheet data...</div>';
 }
 add_shortcode('google_sheets_data', 'cgsd_ajax_shortcode');
+
+add_action('wp_enqueue_scripts', function() {
+    wp_add_inline_script('jquery-core', "
+        window.elementorFrontend = window.elementorFrontend || {};
+        if (typeof window.elementorFrontend.waypoint !== 'function') {
+          console.log('⚙️ Patching missing elementorFrontend.waypoint()');
+          window.elementorFrontend.waypoint = function () { return { destroy: () => {} }; };
+        }
+    ");
+}, 5);
