@@ -10,18 +10,18 @@
   font-weight: 600;
 }
 
-p{
+.p{
   margin: 0;
 }
 
 /* From Uiverse.io by barisdogansutcu */
-svg {
+.cgsd-loadding .svg {
  width: 3.25em;
  transform-origin: center;
  animation: rotate4 2s linear infinite;
 }
 
-circle {
+.cgsd-loadding circle {
  fill: none;
  stroke: hsl(214, 97%, 59%);
  stroke-width: 2;
