@@ -187,6 +187,6 @@ function cgsd_ajax_shortcode() {
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
 
-    return '<div id="cgsd-container" class="text-center text-gray-500">Loading Google Sheet data...</div>';
+    return '<div id="cgsd-container" class="cgsd-tailwind text-center text-gray-500">Loading Google Sheet data...</div>';
 }
 add_shortcode('google_sheets_data', 'cgsd_ajax_shortcode');

@@ -22,8 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // เรียงตามชื่อ A-Z
     rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
-    let html = '<div class="cgsd-tailwind">';
-
     let currentLetter = null;
 
     rows.forEach((r) => {
@@ -109,27 +107,52 @@ document.addEventListener("DOMContentLoaded", async () => {
       </article>`;
     });
 
-    html += "</div>";
     container.innerHTML = html;
 
     setTimeout(() => {
+      console.log("⏳ Waiting longer before rebuild TOC...");
       const $toc = jQuery(".pp-table-of-contents");
       if ($toc.length) {
-        console.log("🧹 Clearing old TOC list...");
         $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
       }
-
-      if (window.elementorFrontend && elementorFrontend.hooks) {
-        console.log("🔁 Rebuilding PowerPack TOC...");
-        elementorFrontend.hooks.doAction(
-          "frontend/element_ready/pp-table-of-contents.default",
-          $toc,
-          jQuery
-        );
-      }
-    }, 800);
+      elementorFrontend.hooks.doAction(
+        "frontend/element_ready/pp-table-of-contents.default",
+        $toc,
+        jQuery
+      );
+    }, 2000);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
   }
 });
+
+function refreshPPToc() {
+  const $toc = jQuery(".pp-table-of-contents");
+  if (!$toc.length) return;
+
+  // ล้างรายการเดิมออกก่อน
+  $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
+
+  // ให้ Elementor re-init widget
+  if (window.elementorFrontend && elementorFrontend.hooks) {
+    console.log("🔁 Force rebuild PowerPack TOC (deep)");
+    elementorFrontend.hooks.doAction(
+      "frontend/element_ready/pp-table-of-contents.default",
+      $toc,
+      jQuery
+    );
+  }
+
+  // ถ้ายังไม่เจอ headings → trigger DOM Mutation
+  setTimeout(() => {
+    const toc = document.querySelector(".pp-table-of-contents");
+    if (toc) {
+      const evt = new Event("DOMSubtreeModified");
+      toc.dispatchEvent(evt);
+    }
+  }, 300);
+}
+
+// ✅ เรียกหลัง render เสร็จ
+setTimeout(refreshPPToc, 1500);
