@@ -1,8 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   corePlugins: { preflight: false },
-  important: ".cgsd-tailwind",
-  content: ["./template/*.php", "*.php"],
+  important: [".cgsd-tailwind","cgsd-loadding"],
+  content: [
+    "./template/**/*.php",
+    "./**/*.php",
+    "./dist/js/**/*.js", // ✅ เพิ่ม: สแกนไฟล์ JS ด้วย
+    "./*.php",
+  ],
   theme: {
     extend: {
       colors: {

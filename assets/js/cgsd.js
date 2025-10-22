@@ -1,120 +1,118 @@
-document.addEventListener("DOMContentLoaded", async function () {
-  const container = document.getElementById("cgsd-sheet-container");
+document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.getElementById("cgsd-container");
   if (!container) return;
-
-  const attrs = JSON.parse(container.dataset.attrs || "{}");
-  const { sheet_id: sheetId, api_key: apiKey, range } = attrs;
-
-  if (!sheetId || !apiKey) {
-    container.innerHTML =
-      '<p class="text-red-600">Missing Sheet ID or API Key</p>';
-    return;
-  }
-
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-  const cacheKey = "cgsd_sheet_cache";
-  const cacheTime = 1000 * 60 * 10; // 10 นาที
-  const now = Date.now();
-
-  // ---------- Loading state ----------
-  container.innerHTML = `
-    <div class="animate-pulse text-center text-gray-500 py-6">
-      Loading data from Google Sheets...
-    </div>
-  `;
+  container.innerHTML = `<div class="cgsd-loadding"><div class="text-gray-500 py-6 flex flex-col items-center"><div><svg viewBox="25 25 50 50">
+    <circle r="20" cy="50" cx="50"></circle></svg></div><div>Loading Google Sheet data...</div></div></div>`;
 
   try {
-    // ---------- Check cache ----------
-    const cached = localStorage.getItem(cacheKey);
-    const cacheTimestamp = localStorage.getItem(cacheKey + "_time");
+    const res = await fetch(`${cgsd_vars.ajax_url}?action=cgsd_get_data`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.data);
 
-    let data;
-    if (cached && cacheTimestamp && now - cacheTimestamp < cacheTime) {
-      data = JSON.parse(cached);
-      console.log("Using cached Google Sheet data ✅");
-    } else {
-      const res = await fetch(url, { cache: "no-cache" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-      localStorage.setItem(cacheKey, JSON.stringify(data));
-      localStorage.setItem(cacheKey + "_time", now);
-      console.log("Fetched fresh data from Google Sheet 🌐");
-    }
+    const values = json.data;
+    const headers = values[0];
+    const rows = values.slice(1);
+    const idxAgency = headers.indexOf("Agency Name");
 
-    if (!data.values || data.values.length < 2) {
-      container.innerHTML = '<p class="text-yellow-700">No data found</p>';
+    if (idxAgency === -1) {
+      container.innerHTML = `<p class="text-red-600">ไม่พบคอลัมน์ Agency Name</p>`;
       return;
     }
 
-    const headers = data.values[0];
-    const rows = data.values.slice(1);
-    const urlPattern =
-      /^(https?:\/\/)?([\w.-]+)\.([a-zA-Z]{2,})([\w\/\.\-\?\=\&\#\%]*)?$/;
+    // เรียงตามชื่อ A-Z
+    rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
-    // ---------- Render with DocumentFragment (เร็วกว่า innerHTML ตรงๆ) ----------
-    const frag = document.createDocumentFragment();
-    const grid = document.createElement("div");
-    grid.className = "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-6";
+    let html = '<div class="cgsd-tailwind">';
+
+    let currentLetter = null;
 
     rows.forEach((r) => {
       const obj = {};
       headers.forEach((h, i) => (obj[h] = r[i] || ""));
 
-      const card = document.createElement("article");
-      card.className =
-        "group relative rounded-2xl ring-1 ring-gray-200 bg-white hover:shadow-xl transition-shadow";
+      const agency = (obj["Agency Name"] || "").trim();
+      if (!agency) return;
 
-      card.innerHTML = `
-        <div class="font-bold text-lg text-center bg-[#0B284D] text-[#FED312] py-1 rounded-t-xl">
-          ${obj["Agency Name"] || "—"}
-        </div>
-        <div class="p-4">
-          <div class="mt-2 text-sm text-gray-700"><strong>Website:</strong> ${
-            obj["Website"] || ""
-          }</div>
-          <div class="text-sm text-gray-700"><strong>Facebook:</strong> ${
-            obj["Facebook Page"] || ""
-          }</div>
-          <div class="text-sm text-gray-700"><strong>Phone:</strong> ${
-            obj["Phone Number"] || ""
-          }</div>
-        </div>
-      `;
+      const desc =
+        obj["Meta Description (EN)"] || obj["Meta Description (EN)"] || "";
+      const logo = obj["URL Logo"] || obj["Logo URL"] || "";
+      const website = obj["Website"] || "";
+      const facebook = obj["Facebook Page"] || "";
+      const phone = obj["Phone Number"] || "";
 
-      const btns = document.createElement("div");
-      btns.className = "flex items-center justify-center pb-2 gap-3";
-
-      if (obj["Website"] && urlPattern.test(obj["Website"])) {
-        const link = document.createElement("a");
-        link.href = obj["Website"];
-        link.target = "_blank";
-        link.rel = "noopener";
-        link.className =
-          "inline-flex font-bold items-center rounded-xl border px-6 py-1.5 text-sm hover:bg-[#0B284D]/90 hover:text-[#FED312] bg-[#0B284D] text-[#FED312]";
-        link.textContent = "View";
-        btns.appendChild(link);
+      const firstLetter = /^[A-Z]/i.test(agency[0])
+        ? agency[0].toUpperCase()
+        : "0-9";
+      if (firstLetter !== currentLetter) {
+        currentLetter = firstLetter;
+        html += `<h2 class="text-2xl font-bold mt-8 mb-2 text-[#0B284D] border-b border-gray-300 pb-1 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h2>`;
       }
 
-      if (obj["Facebook Page"] && urlPattern.test(obj["Facebook Page"])) {
-        const fb = document.createElement("a");
-        fb.href = obj["Facebook Page"];
-        fb.target = "_blank";
-        fb.rel = "noopener";
-        fb.className =
-          "inline-flex font-bold items-center rounded-xl border px-6 py-1.5 text-sm hover:bg-gray-50";
-        fb.textContent = "Facebook";
-        btns.appendChild(fb);
-      }
+      const initial = agency[0].toUpperCase();
 
-      card.appendChild(btns);
-      grid.appendChild(card);
+      // ✅ การ์ดแต่ละเอเจนซี
+      html += `
+      <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
+        <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
+          ${
+            logo
+              ? `<img src="${logo}" loading="lazy" alt="${agency} logo" class="w-full h-full object-contain drop-shadow" />`
+              : `<div class="w-full h-full rounded-xl bg-white/10 text-white font-semibold flex items-center justify-center text-xl">${initial}</div>`
+          }
+        </div>
+        <div class="hidden sm:block w-px bg-gray-200"></div>
+        <div class="flex-1 px-3 py-[10px] text-left">
+          <p class="text-[14px] font-bold font-sarabun mb-[5px] my-0 text-[#0B284D]">${agency}</p>
+          ${
+            desc
+              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 max-h-[35px] overflow-hidden">${desc}</p>`
+              : ""
+          }
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
+            ${
+              website
+                ? `<div class="flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
+                    <a href="${
+                      website.startsWith("http")
+                        ? website
+                        : "https://" + website
+                    }" target="_blank" class="underline text-[#0B284D] text-[12px]">${website}</a>
+                  </div>`
+                : ""
+            }
+            ${
+              facebook
+                ? `<div class="flex items-center gap-2">
+                    <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
+                    <a href="${
+                      facebook.startsWith("http")
+                        ? facebook
+                        : "https://" + facebook
+                    }" target="_blank" class="underline text-[#0B284D] text-[12px]">${agency}</a>
+                  </div>`
+                : ""
+            }
+            ${
+              phone
+                ? `<div class="flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
+                    <a href="tel:${phone.replace(
+                      /\D+/g,
+                      ""
+                    )}" class="text-[#0B284D] text-[12px]">${phone}</a>
+                  </div>`
+                : ""
+            }
+          </div>
+        </div>
+      </article>`;
     });
 
-    frag.appendChild(grid);
-    container.innerHTML = "";
-    container.appendChild(frag);
+    html += "</div>";
+    container.innerHTML = html;
   } catch (err) {
-    container.innerHTML = `<p class="text-red-600">Error fetching data: ${err.message}</p>`;
-    console.error("Google Sheet Fetch Error ❌", err);
+    container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
+    console.error("CGSD Fetch Error ❌", err);
   }
 });
