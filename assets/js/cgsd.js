@@ -109,6 +109,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     // html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
+
+    setTimeout(() => {
+      if (
+        typeof elementorFrontend !== "undefined" &&
+        elementorFrontend?.hooks
+      ) {
+        console.log("🔁 Refreshing PowerPack TOC manually...");
+        document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
+      }
+    }, 1000);
+    
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
