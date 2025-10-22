@@ -112,19 +112,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     html += "</div>";
     container.innerHTML = html;
 
-    // ✅ รีเฟรช PowerPack Table of Contents (Elementor hook)
     setTimeout(() => {
+      const $toc = jQuery(".pp-table-of-contents");
+      if ($toc.length) {
+        console.log("🧹 Clearing old TOC list...");
+        $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
+      }
+
       if (window.elementorFrontend && elementorFrontend.hooks) {
-        console.log("🔁 Refreshing PowerPack TOC via elementorFrontend...");
+        console.log("🔁 Rebuilding PowerPack TOC...");
         elementorFrontend.hooks.doAction(
           "frontend/element_ready/pp-table-of-contents.default",
-          jQuery(".pp-table-of-contents"),
+          $toc,
           jQuery
         );
-      } else {
-        console.warn("⚠️ elementorFrontend not found");
       }
-    }, 1000);
+    }, 800);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
