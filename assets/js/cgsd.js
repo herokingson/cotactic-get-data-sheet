@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // --------------------- ส่วนจัดการ Table of Contents ---------------------
-const CONTAINER_SEL = ".cgsd-tailwind";
+const CONTAINER_SEL = ".cgsd-tailwind .content-blog";
 const TOC_WRAPPER = "#pp-toc-85227a9";
 
 function refreshPowerPackTOC() {
