@@ -112,20 +112,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setTimeout(() => {
       const $toc = jQuery(".pp-table-of-contents");
-      if (!$toc.length) return;
+      if (!$toc.length) {
+        console.warn("⚠️ No .pp-table-of-contents found");
+        return;
+      }
 
-      console.log("🔁 Safe rebuild PowerPack TOC via runReadyTrigger...");
+      console.log("🔁 Rebuilding PowerPack TOC safely...");
 
-      // ล้างรายการเก่า
+      // ล้าง list เดิมกัน cache
       $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
 
-      // ใช้ method ของ Elementor ที่จำลองการโหลด widget จริง
+      // ✅ วิธีที่ถูกต้อง: ใช้ Elementor elementsHandler เพื่อ re-init widget พร้อม settings
       if (window.elementorFrontend && elementorFrontend.elementsHandler) {
-        elementorFrontend.elementsHandler.runReadyTrigger($toc);
+        $toc.each(function () {
+          const $this = jQuery(this);
+          elementorFrontend.elementsHandler.runReadyTrigger($this);
+        });
       } else {
         console.warn("⚠️ elementorFrontend.elementsHandler not available");
       }
-    }, 1200);
+
+      // ✅ สำหรับ PowerPack version ใหม่ (กัน MutationObserver ไม่ trigger)
+      const toc = document.querySelector(".pp-table-of-contents");
+      if (toc) {
+        setTimeout(() => {
+          const evt = new Event("DOMSubtreeModified");
+          toc.dispatchEvent(evt);
+          console.log("📡 Triggered DOMSubtreeModified for TOC");
+        }, 500);
+      }
+    }, 1500);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
