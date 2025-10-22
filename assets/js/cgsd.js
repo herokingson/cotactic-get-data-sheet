@@ -1,22 +1,10 @@
-if (typeof window.ppTocHandler === "undefined") {
-  window.ppTocHandler = {
-    populateTOC: function () {
-      console.log("⚙️ Simulated PowerPack TOC refresh (fallback)");
-      document
-        .querySelectorAll(".pp-toc__list-wrapper")
-        .forEach((w) => w.remove());
-      buildPPTocManually();
-    },
-  };
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".cgsd-tailwind");
   if (container) {
     const obs = new MutationObserver(() => {
       document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
     });
-    obs.observe(container.body, { childList: true, subtree: true });
+    obs.observe(container, { childList: true, subtree: true });
   }
   if (!container) return;
   container.innerHTML = `<div class="cgsd-loadding"><div class="text-gray-500 py-6 flex flex-col items-center"><div><svg viewBox="25 25 50 50">
