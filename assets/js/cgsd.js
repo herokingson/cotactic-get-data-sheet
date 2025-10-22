@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // --------------------- ส่วนจัดการ Table of Contents ---------------------
 const CONTAINER_SEL = ".content-blog";
-const TOC_WRAPPER = ".pp-toc";
+const TOC_WRAPPER = ".pp-toc, #pp-toc-ad5b393";
 
 function refreshPowerPackTOC() {
   console.log("🔁 เริ่มรีเฟรช PowerPack TOC...");
