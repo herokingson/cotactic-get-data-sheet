@@ -1,14 +1,25 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".cgsd-tailwind");
-  if (container) {
-    const obs = new MutationObserver(() => {
-      document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
-    });
-    obs.observe(container, { childList: true, subtree: true });
-  }
   if (!container) return;
-  container.innerHTML = `<div class="cgsd-loadding"><div class="text-gray-500 py-6 flex flex-col items-center"><div><svg viewBox="25 25 50 50">
-    <circle r="20" cy="50" cx="50"></circle></svg></div><div>Loading Google Sheet data...</div></div></div>`;
+
+  // 🔄 สังเกตการเปลี่ยนแปลง เพื่อ refresh TOC อัตโนมัติ
+  const obs = new MutationObserver(() => {
+    document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
+  });
+  obs.observe(container, { childList: true, subtree: true });
+
+  // 🔄 แสดง Loading
+  container.innerHTML = `
+    <div class="cgsd-loadding">
+      <div class="text-gray-500 py-6 flex flex-col items-center">
+        <div>
+          <svg viewBox="25 25 50 50" class="animate-spin w-10 h-10 text-[#0B284D]">
+            <circle r="20" cy="50" cx="50"></circle>
+          </svg>
+        </div>
+        <div>Loading Google Sheet data...</div>
+      </div>
+    </div>`;
 
   try {
     const res = await fetch(`${cgsd_vars.ajax_url}?action=cgsd_get_data`);
@@ -21,14 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const idxAgency = headers.indexOf("Agency Name");
 
     if (idxAgency === -1) {
-      container.innerHTML = `<p class="text-red-600">ไม่พบคอลัมน์ Agency Name</p>`;
+      container.innerHTML = `<p class="text-red-600">❌ ไม่พบคอลัมน์ Agency Name</p>`;
       return;
     }
 
-    // เรียงตามชื่อ A-Z
+    // ✅ เรียงชื่อ A-Z
     rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
-    let html = "<div class='cgsd-tailwind'>"; // ✅ ประกาศตรงนี้
+    let html = "<div class='cgsd-tailwind'>";
     let currentLetter = null;
 
     rows.forEach((r) => {
@@ -39,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!agency) return;
 
       const desc =
-        obj["Meta Description (EN)"] || obj["Meta Description (EN)"] || "";
+        obj["Meta Description (EN)"] || obj["Meta Description (TH)"] || "";
       const logo = obj["URL Logo"] || obj["Logo URL"] || "";
       const website = obj["Website"] || "";
       const facebook = obj["Facebook Page"] || "";
@@ -48,76 +59,77 @@ document.addEventListener("DOMContentLoaded", async () => {
       const firstLetter = /^[A-Z]/i.test(agency[0])
         ? agency[0].toUpperCase()
         : "0-9";
+
       if (firstLetter !== currentLetter) {
         currentLetter = firstLetter;
-        html += `<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">รายชื่อ Agency ประเภทหมวด ${firstLetter}</h3>`;
+        html += `<h3 class="!text-2xl font-bold mt-4 mb-2 text-[#0B284D] border-b border-gray-200 pb-1 text-left">หมวด ${firstLetter}</h3>`;
       }
 
       const initial = agency[0].toUpperCase();
 
-      // ✅ การ์ดแต่ละเอเจนซี
       html += `
-      <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
-        <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
-          ${
-            logo
-              ? `<img src="${logo}" loading="lazy" alt="${agency} logo" class="w-full h-full object-contain drop-shadow" />`
-              : `<div class="w-full h-full rounded-xl bg-white/10 text-white font-semibold flex items-center justify-center text-xl">${initial}</div>`
-          }
-        </div>
-        <div class="hidden sm:block w-px bg-gray-200"></div>
-        <div class="flex-1 px-3 py-[10px] text-left">
-          <p class="text-[14px] font-bold font-sarabun mb-[5px] my-0 text-[#0B284D]">${agency}</p>
-          ${
-            desc
-              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 h-[35px] max-h-[35px] overflow-hidden">${desc}</p>`
-              : ""
-          }
-          <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
+        <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
+          <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
             ${
-              website
-                ? `<div class="flex items-center gap-2">
-                    <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
-                    <a href="${
-                      website.startsWith("http")
-                        ? website
-                        : "https://" + website
-                    }" target="_blank" class="underline text-[#0B284D] text-[12px]">${website}</a>
-                  </div>`
-                : ""
-            }
-            ${
-              facebook
-                ? `<div class="flex items-center gap-2">
-                    <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
-                    <a href="${
-                      facebook.startsWith("http")
-                        ? facebook
-                        : "https://" + facebook
-                    }" target="_blank" class="underline text-[#0B284D] text-[12px]">${agency}</a>
-                  </div>`
-                : ""
-            }
-            ${
-              phone
-                ? `<div class="flex items-center gap-2">
-                    <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
-                    <a href="tel:${phone.replace(
-                      /\D+/g,
-                      ""
-                    )}" class="text-[#0B284D] text-[12px]">${phone}</a>
-                  </div>`
-                : ""
+              logo
+                ? `<img src="${logo}" loading="lazy" alt="${agency} logo" class="w-full h-full object-contain drop-shadow" />`
+                : `<div class="w-full h-full bg-white/10 text-white font-semibold flex items-center justify-center text-xl">${initial}</div>`
             }
           </div>
-        </div>
-      </article>`;
+          <div class="hidden sm:block w-px bg-gray-200"></div>
+          <div class="flex-1 px-3 py-[10px] text-left">
+            <p class="text-[14px] font-bold font-sarabun mb-1 text-[#0B284D]">${agency}</p>
+            ${
+              desc
+                ? `<p class="text-[14px] font-sarabun leading-4 text-gray-700 h-[35px] overflow-hidden">${desc}</p>`
+                : ""
+            }
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
+              ${
+                website
+                  ? `<div class="flex items-center gap-2">
+                      <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
+                      <a href="${
+                        website.startsWith("http")
+                          ? website
+                          : "https://" + website
+                      }" target="_blank" class="underline text-[#0B284D] text-[12px]">${website}</a>
+                    </div>`
+                  : ""
+              }
+              ${
+                facebook
+                  ? `<div class="flex items-center gap-2">
+                      <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
+                      <a href="${
+                        facebook.startsWith("http")
+                          ? facebook
+                          : "https://" + facebook
+                      }" target="_blank" class="underline text-[#0B284D] text-[12px]">${agency}</a>
+                    </div>`
+                  : ""
+              }
+              ${
+                phone
+                  ? `<div class="flex items-center gap-2">
+                      <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
+                      <a href="tel:${phone.replace(
+                        /\D+/g,
+                        ""
+                      )}" class="text-[#0B284D] text-[12px]">${phone}</a>
+                    </div>`
+                  : ""
+              }
+            </div>
+          </div>
+        </article>`;
     });
-    html += "</div>"; // ✅ ปิด tag
+
+    html += "</div>";
     container.innerHTML = html;
 
+    // 🔁 พยายาม Refresh PowerPack TOC
     setTimeout(() => {
-      // 1️⃣ พยายาม refresh PowerPack TOC (ถ้ามี)
       const toc = document.querySelector(".pp-toc, [id^='pp-toc-']");
       if (
         toc &&
@@ -133,7 +145,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // 2️⃣ ถ้า PowerPack ไม่พร้อม ให้ fallback manual
       console.log("⚙️ PowerPack TOC fallback...");
       buildPPTocManually();
     }, 800);
@@ -143,7 +154,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// -------------------- ส่วน fallback ซ่อม TOC --------------------
+// -------------------- ส่วน fallback สร้าง TOC --------------------
 const CONTAINER_SEL = ".cgsd-tailwind";
 const TOC_WRAPPER = "#pp-toc-85227a9";
 
@@ -188,6 +199,7 @@ function buildPPTocManually() {
   console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
 }
 
+// 🔄 รอให้ TOC spinner หายแล้วสร้าง fallback
 const waitForTOCSpinner = setInterval(() => {
   const spinner = document.querySelector(
     `${TOC_WRAPPER} .pp-toc__spinner-container`
