@@ -112,31 +112,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setTimeout(() => {
       const $toc = jQuery(".pp-table-of-contents");
-      if ($toc.length) {
-        console.log("🧹 Clearing old TOC list...");
-        // เคลียร์เนื้อหาภายใน list เดิม
-        $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
-      }
+      if (!$toc.length) return;
 
-      // เรียกให้ Elementor โหลด widget PowerPack TOC ใหม่
-      if (window.elementorFrontend && elementorFrontend.hooks) {
-        console.log("🔁 Rebuilding PowerPack TOC...");
-        elementorFrontend.hooks.doAction(
-          "frontend/element_ready/pp-table-of-contents.default",
-          $toc,
-          jQuery
-        );
-      }
+      console.log("🔁 Safe rebuild PowerPack TOC via runReadyTrigger...");
 
-      // ส่ง event DOMSubtreeModified (สำหรับ version ใหม่ที่ใช้ MutationObserver)
-      setTimeout(() => {
-        const toc = document.querySelector(".pp-table-of-contents");
-        if (toc) {
-          const evt = new Event("DOMSubtreeModified");
-          toc.dispatchEvent(evt);
-        }
-      }, 400);
-    }, 1800); // ✅ รอให้ <h3> สร้างเสร็จก่อนค่อย rebuild
+      // ล้างรายการเก่า
+      $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
+
+      // ใช้ method ของ Elementor ที่จำลองการโหลด widget จริง
+      if (window.elementorFrontend && elementorFrontend.elementsHandler) {
+        elementorFrontend.elementsHandler.runReadyTrigger($toc);
+      } else {
+        console.warn("⚠️ elementorFrontend.elementsHandler not available");
+      }
+    }, 1200);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
