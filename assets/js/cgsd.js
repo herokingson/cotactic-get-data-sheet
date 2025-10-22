@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // เรียงตามชื่อ A-Z
     rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
-    let html = ""; // ✅ ประกาศตรงนี้
+    let html = '<div class="cgsd-tailwind">'; // ✅ ประกาศตรงนี้
     let currentLetter = null;
 
     rows.forEach((r) => {
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </article>`;
     });
-    html += ""; // ✅ ปิด tag
+    html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
@@ -115,18 +115,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-window.elementorFrontend = window.elementorFrontend || {};
-if (typeof window.elementorFrontend.waypoint !== "function") {
-  console.log("⚙️ Patching missing elementorFrontend.waypoint()");
-  window.elementorFrontend.waypoint = function () {
-    return { destroy: () => {} };
-  };
-}
-
 const CONTAINER_SEL = ".cgsd-tailwind";
 const TOC_WRAPPER = "#pp-toc-85227a9";
 
-// สร้างฟังก์ชันหลัก
 function buildPPTocManually() {
   const toc = document.querySelector(TOC_WRAPPER);
   const host = document.querySelector(CONTAINER_SEL);
@@ -144,14 +135,16 @@ function buildPPTocManually() {
     return;
   }
 
-  // ✅ ถ้ายังเป็น spinner ให้แทนที่ด้วย list ใหม่
+  // ถ้ายังเป็น spinner ให้แทนที่ด้วย list ใหม่
   let listWrap = toc.querySelector(".pp-toc__list, ul");
   if (!listWrap) {
     const body = toc.querySelector(".pp-toc__body");
     if (body) {
+      // ลบ spinner container ออกก่อน
       const spinner = body.querySelector(".pp-toc__spinner-container");
       if (spinner) spinner.remove();
 
+      // ✅ สร้าง ul ใหม่
       listWrap = document.createElement("ul");
       listWrap.className = "pp-toc__list";
       body.appendChild(listWrap);
@@ -186,30 +179,22 @@ function buildPPTocManually() {
 
   console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
 
-  // Smooth scroll
+  // เพิ่ม smooth scroll
   listWrap.querySelectorAll("a[href^='#']").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
-      const target = document.querySelector(a.getAttribute("href"));
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      const t = document.querySelector(a.getAttribute("href"));
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 }
 
-// ✅ เฝ้าดู DOM ว่ามี .cgsd-tailwind โผล่มาเมื่อไหร่
-const observer = new MutationObserver(() => {
-  const host = document.querySelector(CONTAINER_SEL);
-  if (host) {
-    console.log("👀 พบ .cgsd-tailwind แล้ว เริ่มสร้าง TOC ...");
-    observer.disconnect();
-    buildPPTocManually();
-  }
-});
-
-// เริ่มสังเกต DOM ทั้งหน้า
-observer.observe(document.body, { childList: true, subtree: true });
-
-// กันเหนียว: ถ้ามีอยู่แล้วให้ทำเลย
-if (document.querySelector(CONTAINER_SEL)) {
-  buildPPTocManually();
-}
+// ✅ รอให้ spinner หายก่อน แล้วค่อยทำงาน
+const waitForTOCSpinner = setInterval(() => {
+  const spinner = document.querySelector(
+    `${TOC_WRAPPER} .pp-toc__spinner-container`
+  );
+  if (spinner) return; // ยังโหลดอยู่
+  clearInterval(waitForTOCSpinner);
+  setTimeout(buildPPTocManually, 800); // เผื่อดีเลย์นิดนึง
+}, 300);
