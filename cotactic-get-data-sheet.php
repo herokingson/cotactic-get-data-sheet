@@ -170,7 +170,7 @@ function cgsd_ajax_shortcode() {
     wp_enqueue_script('jquery');
     wp_enqueue_script(
         'cgsd-fetch-js',
-        plugin_dir_url(__FILE__) . 'assets/js/cgsd.js', // ✅ อ้างอิงจากปลั๊กอินที่รันจริง
+        plugin_dir_url(__FILE__) . 'dist/js/cgsd.js', // ✅ อ้างอิงจากปลั๊กอินที่รันจริง
         ['jquery'],
         '2.0',
         true

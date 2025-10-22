@@ -111,38 +111,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     html += "</div>";
     container.innerHTML = html;
-    // ✅ รีเฟรช Table of Contents ทุกค่ายหลังโหลดข้อมูล
-    setTimeout(() => {
-      // Elementor Pro TOC
-      if (window.elementorFrontend && window.elementorFrontend.hooks) {
-        jQuery(".elementor-widget-table-of-contents").each(function () {
-          elementorFrontend.hooks.doAction(
-            "frontend/element_ready/table-of-contents.default",
-            jQuery(this),
-            jQuery
-          );
-        });
-      }
 
-      // PowerPack TOC
+    setTimeout(() => {
       if (
         window.PPTableOfContentsHandler &&
         typeof PPTableOfContentsHandler.init === "function"
       ) {
+        console.log("🔁 Refreshing PowerPack TOC...");
         PPTableOfContentsHandler.init();
+      } else {
+        console.warn("⚠️ PowerPack TOC handler not found.");
       }
-
-      // Essential Addons TOC
-      if (
-        window.EAELTableOfContent &&
-        typeof EAELTableOfContent.init === "function"
-      ) {
-        EAELTableOfContent.init();
-      }
-
-      // Happy Addons TOC (บางเวอร์ชันใช้ class .ha-table-of-contents)
-      jQuery(".ha-table-of-contents").trigger("ha-toc-refresh");
-    }, 800);
+    }, 600);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
