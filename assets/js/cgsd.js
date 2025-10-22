@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // เรียงตามชื่อ A-Z
     rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
 
+    let html = '<div class="cgsd-tailwind">'; // ✅ ประกาศตรงนี้
     let currentLetter = null;
 
     rows.forEach((r) => {
@@ -106,21 +107,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </article>`;
     });
-
+    html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
 
     setTimeout(() => {
-      console.log("⏳ Waiting longer before rebuild TOC...");
       const $toc = jQuery(".pp-table-of-contents");
       if ($toc.length) {
+        console.log("🧹 Clearing old TOC list...");
         $toc.find(".pp-toc__list, .pp-toc__list-wrapper").empty();
       }
-      elementorFrontend.hooks.doAction(
-        "frontend/element_ready/pp-table-of-contents.default",
-        $toc,
-        jQuery
-      );
-    }, 2000);
+
+      if (window.elementorFrontend && elementorFrontend.hooks) {
+        console.log("🔁 Rebuilding PowerPack TOC...");
+        elementorFrontend.hooks.doAction(
+          "frontend/element_ready/pp-table-of-contents.default",
+          $toc,
+          jQuery
+        );
+      }
+    }, 800);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
