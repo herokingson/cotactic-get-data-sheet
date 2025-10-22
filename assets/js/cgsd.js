@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // === Manual fallback: สร้าง TOC ให้ PowerPack เอง ===
 // ปรับ selector ตรงนี้ให้ตรงกับที่ตั้งใน widget
-const CONTAINER_SEL = ".content-blog .cgsd-tailwind"; // ที่มี <h2>/<h3> จาก Google Sheet
+const CONTAINER_SEL = ".cgsd-tailwind"; // ที่มี <h2>/<h3> จาก Google Sheet
 const TOC_WRAPPER = ".pp-toc"; // ตัว widget PowerPack
 
 function buildPPTocManually() {
