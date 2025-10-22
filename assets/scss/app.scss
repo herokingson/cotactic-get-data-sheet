@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .cgsd-tailwind{
-  @apply grid grid-cols-1 !gap-5;
+  @apply grid grid-cols-1 !gap-2;
   font-family: 'Sarabun', sans-serif;
 }
 .cgsd-tailwind h2 {

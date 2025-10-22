@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         : "0-9";
       if (firstLetter !== currentLetter) {
         currentLetter = firstLetter;
-        html += `<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h3>`;
+        html += `<h2 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h2>`;
       }
 
       const initial = agency[0].toUpperCase();
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p class="text-[14px] font-bold font-sarabun mb-[5px] my-0 text-[#0B284D]">${agency}</p>
           ${
             desc
-              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 max-h-[35px] overflow-hidden">${desc}</p>`
+              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 h-[35px] max-h-[35px] overflow-hidden">${desc}</p>`
               : ""
           }
           <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
