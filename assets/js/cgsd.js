@@ -155,58 +155,71 @@ function refreshPowerPackTOC() {
 }
 
 function buildPPTocManually() {
-  const toc = document.querySelector(TOC_WRAPPER);
   const host = document.querySelector(CONTAINER_SEL);
-  if (!toc || !host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container");
+  if (!host) {
+    console.warn("⚠️ ไม่พบ container สำหรับสร้าง TOC");
     return;
   }
 
-  console.log("✅ สร้าง TOC fallback...");
+  // 🔹 ดึงทุก TOC ที่ต้องการอัปเดต (อาจมีหลายจุดในหน้า)
+  const tocs = document.querySelectorAll(TOC_WRAPPER);
+  if (!tocs.length) {
+    console.warn("⚠️ ไม่พบ TOC element ตาม selector:", TOC_WRAPPER);
+    return;
+  }
+
   const heads = host.querySelectorAll("h2, h3");
   if (!heads.length) {
-    console.warn("⚠️ ไม่พบหัวข้อ h2/h3 สำหรับสร้าง TOC");
+    console.warn("⚠️ ไม่พบหัวข้อ h2/h3 ใน container");
     return;
   }
 
-  let listWrap = toc.querySelector(".pp-toc__list, ul");
-  if (!listWrap) {
+  console.log(`🧩 กำลังสร้าง TOC ทั้งหมด ${tocs.length} จุด...`);
+
+  tocs.forEach((toc) => {
+    // ล้าง spinner ออก
     const body = toc.querySelector(".pp-toc__body");
-    if (body) {
-      const spinner = body.querySelector(".pp-toc__spinner-container");
-      if (spinner) spinner.remove();
+    if (!body) return;
+    const spinner = body.querySelector(".pp-toc__spinner-container");
+    if (spinner) spinner.remove();
+
+    // ✅ สร้าง ul ใหม่
+    let listWrap = toc.querySelector(".pp-toc__list");
+    if (!listWrap) {
       listWrap = document.createElement("ul");
       listWrap.className = "pp-toc__list";
       body.appendChild(listWrap);
+    } else {
+      listWrap.innerHTML = "";
     }
-  }
 
-  if (!listWrap) return;
-  listWrap.innerHTML = "";
-  let idx = 0;
-  heads.forEach((h) => {
-    if (!h.id) h.id = `pp-toc__heading-${idx++}`;
-    console.log(h);
-    const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
-    const li = document.createElement("li");
-    li.className = `pp-toc__list-item level-${level}`;
-    li.innerHTML = `
-      <div class="pp-toc__list-item-text-wrapper">
-        <a href="#${h.id}" class="pp-toc__list-item-text ${
-      level === 0 ? "pp-toc__top-level" : ""
-    }">${h.textContent.trim()}</a>
-      </div>`;
-    listWrap.appendChild(li);
+    // ✅ เพิ่มรายการหัวข้อ
+    let idx = 0;
+    heads.forEach((h) => {
+      if (!h.id) h.id = `pp-toc__heading-${idx++}`;
+      const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
+      const li = document.createElement("li");
+      li.className = `pp-toc__list-item level-${level}`;
+      li.innerHTML = `
+        <div class="pp-toc__list-item-text-wrapper">
+          <a href="#${h.id}" class="pp-toc__list-item-text ${
+        level === 0 ? "pp-toc__top-level" : ""
+      }">${h.textContent.trim()}</a>
+        </div>`;
+      listWrap.appendChild(li);
+    });
+
+    console.log(`✅ สร้าง TOC (${toc.id || "no-id"}) สำเร็จ`);
   });
 
-  console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
-
-  // เพิ่ม smooth scroll
-  listWrap.querySelectorAll("a[href^='#']").forEach((a) => {
+  // เพิ่ม smooth scroll ทุก TOC
+  document.querySelectorAll(".pp-toc__list a[href^='#']").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
-      const t = document.querySelector(a.getAttribute("href"));
-      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      const target = document.querySelector(a.getAttribute("href"));
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
+
+  console.log(`🎯 เพิ่มหัวข้อทั้งหมด ${heads.length} หัวข้อเสร็จเรียบร้อย`);
 }
