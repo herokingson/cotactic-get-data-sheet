@@ -111,25 +111,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     html += "</div>";
     container.innerHTML = html;
+    // ✅ รีเฟรช Table of Contents ทุกค่ายหลังโหลดข้อมูล
     setTimeout(() => {
-      // หา widget ทั้งหมดที่มี TOC ของ Elementor
-      jQuery(".elementor-widget-table-of-contents").each(function () {
-        const $widget = jQuery(this);
-        const widgetData = $widget.data("widget_type");
-        if (widgetData && widgetData.includes("table-of-contents")) {
-          // รีเซ็ตสถานะ
-          $widget.find(".elementor-toc__list").empty();
-          // เรียกฟังก์ชันของ Elementor เพื่อสแกน heading ใหม่
-          if (window.elementorFrontend && window.elementorFrontend.hooks) {
-            elementorFrontend.hooks.doAction(
-              "frontend/element_ready/table-of-contents.default",
-              $widget,
-              jQuery
-            );
-          }
-        }
-      });
-    }, 600);
+      // Elementor Pro TOC
+      if (window.elementorFrontend && window.elementorFrontend.hooks) {
+        jQuery(".elementor-widget-table-of-contents").each(function () {
+          elementorFrontend.hooks.doAction(
+            "frontend/element_ready/table-of-contents.default",
+            jQuery(this),
+            jQuery
+          );
+        });
+      }
+
+      // PowerPack TOC
+      if (
+        window.PPTableOfContentsHandler &&
+        typeof PPTableOfContentsHandler.init === "function"
+      ) {
+        PPTableOfContentsHandler.init();
+      }
+
+      // Essential Addons TOC
+      if (
+        window.EAELTableOfContent &&
+        typeof EAELTableOfContent.init === "function"
+      ) {
+        EAELTableOfContent.init();
+      }
+
+      // Happy Addons TOC (บางเวอร์ชันใช้ class .ha-table-of-contents)
+      jQuery(".ha-table-of-contents").trigger("ha-toc-refresh");
+    }, 800);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
