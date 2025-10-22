@@ -1,10 +1,22 @@
+if (typeof window.ppTocHandler === "undefined") {
+  window.ppTocHandler = {
+    populateTOC: function () {
+      console.log("⚙️ Simulated PowerPack TOC refresh (fallback)");
+      document
+        .querySelectorAll(".pp-toc__list-wrapper")
+        .forEach((w) => w.remove());
+      buildPPTocManually();
+    },
+  };
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".cgsd-tailwind");
   if (container) {
     const obs = new MutationObserver(() => {
       document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
     });
-    obs.observe(container, { childList: true, subtree: true });
+    obs.observe(container.body, { childList: true, subtree: true });
   }
   if (!container) return;
   container.innerHTML = `<div class="cgsd-loadding"><div class="text-gray-500 py-6 flex flex-col items-center"><div><svg viewBox="25 25 50 50">
@@ -116,10 +128,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     // html += "</div>"; // ✅ ปิด tag
     container.innerHTML = html;
 
-    requestAnimationFrame(() => {
-      console.log("🔁 Triggering PowerPack TOC rebuild...");
-      document.dispatchEvent(new CustomEvent("powerpack-toc-refresh"));
-    });
+    setTimeout(() => {
+      // 1️⃣ พยายาม refresh PowerPack TOC (ถ้ามี)
+      const toc = document.querySelector(".pp-toc, [id^='pp-toc-']");
+      if (
+        toc &&
+        window.ppTocHandler &&
+        typeof window.ppTocHandler.populateTOC === "function"
+      ) {
+        console.log("🔁 Force refresh PowerPack TOC via handler...");
+        try {
+          window.ppTocHandler.populateTOC();
+          return;
+        } catch (e) {
+          console.warn("⚠️ PowerPack handler populateTOC error:", e);
+        }
+      }
+
+      // 2️⃣ ถ้า PowerPack ไม่พร้อม ให้ fallback manual
+      console.log("⚙️ PowerPack TOC fallback...");
+      buildPPTocManually();
+    }, 800);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
