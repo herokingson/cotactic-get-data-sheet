@@ -122,8 +122,11 @@ function buildPPTocManually() {
   const toc = document.querySelector(TOC_WRAPPER);
   const host = document.querySelector(CONTAINER_SEL);
 
-  if (!toc || !host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc, host });
+  if (!toc) {
+    console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc });
+    return;
+  } else if (!host) {
+    console.warn("TOC fallback: ไม่พบ toc หรือ container", { host });
     return;
   }
 
