@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         : "0-9";
       if (firstLetter !== currentLetter) {
         currentLetter = firstLetter;
-        html += `<h2 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h2>`;
+        html += `<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">ข้อมูลประเภทหมวด ${firstLetter}</h3>`;
       }
 
       const initial = agency[0].toUpperCase();
@@ -111,6 +111,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     html += "</div>";
     container.innerHTML = html;
+    setTimeout(() => {
+      // หา widget ทั้งหมดที่มี TOC ของ Elementor
+      jQuery(".elementor-widget-table-of-contents").each(function () {
+        const $widget = jQuery(this);
+        const widgetData = $widget.data("widget_type");
+        if (widgetData && widgetData.includes("table-of-contents")) {
+          // รีเซ็ตสถานะ
+          $widget.find(".elementor-toc__list").empty();
+          // เรียกฟังก์ชันของ Elementor เพื่อสแกน heading ใหม่
+          if (window.elementorFrontend && window.elementorFrontend.hooks) {
+            elementorFrontend.hooks.doAction(
+              "frontend/element_ready/table-of-contents.default",
+              $widget,
+              jQuery
+            );
+          }
+        }
+      });
+    }, 600);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
