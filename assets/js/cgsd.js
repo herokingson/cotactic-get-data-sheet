@@ -115,27 +115,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// === Manual fallback: สร้าง TOC ให้ PowerPack เอง ===
-// ปรับ selector ตรงนี้ให้ตรงกับที่ตั้งใน widget
-const CONTAINER_SEL = ".cgsd-tailwind"; // ที่มี <h2>/<h3> จาก Google Sheet
-const TOC_WRAPPER = "#pp-toc-85227a9"; // ตัว widget PowerPack
+const CONTAINER_SEL = ".cgsd-tailwind"; // ตรงกับที่มี h3
+const TOC_WRAPPER = "#pp-toc-85227a9"; // 👈 เปลี่ยนเป็น id ของ widget ที่อยู่ใน content
 
 function buildPPTocManually() {
   const toc = document.querySelector(TOC_WRAPPER);
   const host = document.querySelector(CONTAINER_SEL);
   if (!toc || !host) {
-    console.warn("TOC fallback: ไม่พบ toc หรือ container");
+    console.warn("TOC fallback: ไม่พบ toc หรือ container", { toc, host });
     return;
   }
 
-  // หารายการหัวข้อ (ตามที่คุณตั้งใน Anchors by Tags)
+  console.log("✅ สร้าง PowerPack TOC fallback...");
+
   const heads = host.querySelectorAll("h2, h3");
   if (!heads.length) {
     console.warn("TOC fallback: ไม่พบ h2/h3 ใน container");
     return;
   }
 
-  // ที่ใส่รายการของ PowerPack
   const listWrap =
     toc.querySelector(".pp-toc__list-wrapper") ||
     toc.querySelector(".pp-toc__list") ||
@@ -145,45 +143,28 @@ function buildPPTocManually() {
     return;
   }
 
-  // ล้างรายการเดิม
   listWrap.innerHTML = "";
-
-  // สร้างรายการใหม่
   let idx = 0;
   heads.forEach((h) => {
-    if (!h.id) {
-      h.id = `pp-toc__heading-anchor-${idx++}`;
-    }
+    if (!h.id) h.id = `pp-toc__heading-${idx++}`;
     const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
+
     const li = document.createElement("li");
     li.className = `pp-toc__list-item level-${level}`;
-
-    const wrap = document.createElement("div");
-    wrap.className = "pp-toc__list-item-text-wrapper";
-
-    const a = document.createElement("a");
-    a.href = `#${h.id}`;
-    a.className = `pp-toc__list-item-text ${
+    li.innerHTML = `
+      <div class="pp-toc__list-item-text-wrapper">
+        <a href="#${h.id}" class="pp-toc__list-item-text ${
       level === 0 ? "pp-toc__top-level" : ""
-    }`;
-    a.textContent = h.textContent.trim();
-
-    wrap.appendChild(a);
-    li.appendChild(wrap);
+    }">
+          ${h.textContent.trim()}
+        </a>
+      </div>
+    `;
     listWrap.appendChild(li);
   });
 
-  // smooth scroll แบบง่าย (ถ้าต้องการ)
-  listWrap.querySelectorAll("a[href^='#']").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      const t = document.querySelector(a.getAttribute("href"));
-      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  });
-
-  console.log("✅ TOC fallback: สร้างรายการให้ PowerPack เรียบร้อย");
+  console.log(`✅ TOC fallback: เพิ่ม ${heads.length} หัวข้อเรียบร้อย`);
 }
 
-// เรียกหลัง render เสร็จ/หลัง trigger ต่าง ๆ
-setTimeout(buildPPTocManually, 1200);
+// รอให้ heading ถูก inject เสร็จก่อน
+setTimeout(buildPPTocManually, 2500);
