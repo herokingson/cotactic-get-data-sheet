@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p class="text-[14px] font-bold font-sarabun mb-[5px] my-0 text-[#0B284D]">${agency}</p>
           ${
             desc
-              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 h-[35px] max-h-[35px] overflow-hidden">${desc}</p>`
+              ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 h-[35px] max-h-[35px] overflow-hidden mb-0">${desc}</p>`
               : ""
           }
           <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
