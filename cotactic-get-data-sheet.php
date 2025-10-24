@@ -341,6 +341,11 @@ add_shortcode('cgsd_sheet', function ($atts) {
         $letter   = strtoupper($r['first_letter']);
         $initial  = mb_substr($agency, 0, 1, 'UTF-8');
 
+        // 🔹 รวมหมวดตัวเลขให้เป็นกลุ่มเดียวกัน (0-9)
+        if (preg_match('/^[0-9]/', $letter)) {
+            $letter = '0-9';
+        }
+
         if ($letter !== $current_letter) {
             $current_letter = $letter;
             $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
