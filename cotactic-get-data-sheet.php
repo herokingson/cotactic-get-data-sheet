@@ -255,28 +255,28 @@ add_shortcode('cgsd_sheet', function () {
     return '<div id="cgsd-container"></div>';
 });
 
+function cgsd_maybe_create_table() {
+    global $wpdb;
+    $table = $wpdb->prefix . 'get_data_sheets';
+    if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table)) === $table) return;
 
-add_action('admin_init', function() {
-    if (isset($_GET['cgsd_create_table'])) {
-        global $wpdb;
-        $table = $wpdb->prefix . 'get_data_sheets';
-        $charset = $wpdb->get_charset_collate();
+    $charset = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE IF NOT EXISTS $table (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        agency_name VARCHAR(255) DEFAULT '' NOT NULL,
+        website TEXT, facebook TEXT, phone VARCHAR(50), logo TEXT,
+        meta_desc TEXT, first_letter VARCHAR(8) DEFAULT '',
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+    ) $charset;";
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+}
 
-        $sql = "CREATE TABLE IF NOT EXISTS $table (
-            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-            agency_name VARCHAR(255) DEFAULT '' NOT NULL,
-            website TEXT,
-            facebook TEXT,
-            phone VARCHAR(50),
-            logo TEXT,
-            meta_desc TEXT,
-            first_letter VARCHAR(8) DEFAULT '',
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id)
-        ) $charset;";
+register_activation_hook(__FILE__, 'cgsd_maybe_create_table');
+add_action('admin_init', 'cgsd_maybe_create_table');
 
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta($sql);
-        echo "<div class='updated'><p>✅ Table created: $table</p></div>";
-    }
+add_shortcode('cgsd_sheet', function () {
+    cgsd_maybe_create_table();
+    return '<div id="cgsd-container"></div>';
 });
