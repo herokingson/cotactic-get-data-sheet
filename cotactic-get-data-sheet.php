@@ -15,30 +15,30 @@ define('CGSD_TABLE', $GLOBALS['wpdb']->prefix . 'get_data_sheets');
 /** -----------------------------------------------------------
  * 1) สร้างตารางเมื่อเปิดใช้งานปลั๊กอิน
  * ----------------------------------------------------------- */
-register_activation_hook(__FILE__, function () {
-    error_log("✅ CGSD ACTIVATION HOOK RUNNING...");
-    global $wpdb;
-    $charset = $wpdb->get_charset_collate();
-    $table   = $wpdb->prefix . 'get_data_sheets';
+// register_activation_hook(__FILE__, function () {
+//     error_log("✅ CGSD ACTIVATION HOOK RUNNING...");
+//     global $wpdb;
+//     $charset = $wpdb->get_charset_collate();
+//     $table   = $wpdb->prefix . 'get_data_sheets';
 
-    $sql = "CREATE TABLE IF NOT EXISTS $table (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        agency_name VARCHAR(255) DEFAULT '' NOT NULL,
-        website TEXT,
-        facebook TEXT,
-        phone VARCHAR(50),
-        logo TEXT,
-        meta_desc TEXT,
-        first_letter VARCHAR(8) DEFAULT '',
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY  (id)
-    ) $charset;";
+//     $sql = "CREATE TABLE IF NOT EXISTS $table (
+//         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+//         agency_name VARCHAR(255) DEFAULT '' NOT NULL,
+//         website TEXT,
+//         facebook TEXT,
+//         phone VARCHAR(50),
+//         logo TEXT,
+//         meta_desc TEXT,
+//         first_letter VARCHAR(8) DEFAULT '',
+//         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+//         PRIMARY KEY  (id)
+//     ) $charset;";
 
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+//     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+//     dbDelta($sql);
 
-    error_log("✅ CGSD TABLE CREATION DONE for {$table}");
-});
+//     error_log("✅ CGSD TABLE CREATION DONE for {$table}");
+// });
 
 /** -----------------------------------------------------------
  * 2) เมนูแอดมิน + หน้า Settings
@@ -75,15 +75,6 @@ function cgsd_admin_page()
   <h2 class="title">Google Sheets Settings</h2>
   <table class="form-table">
     <tr>
-      <th scope="row">Sheet ID</th>
-      <td><input type="text" id="cgsd_sheet_id" class="regular-text" value="<?php echo $sheet_id; ?>"></td>
-    </tr>
-    <tr>
-      <th scope="row">Range</th>
-      <td><input type="text" id="cgsd_range" class="regular-text" value="<?php echo $range; ?>"
-          placeholder="เช่น 200Digital!A:H"></td>
-    </tr>
-    <tr>
       <th scope="row">API Key</th>
       <td>
         <input type="password" id="cgsd_api_key" class="regular-text" value="<?php echo $api_key; ?>">
@@ -105,8 +96,6 @@ function cgsd_admin_page()
   window.CGSD_ADMIN = {
     nonce: "<?php echo esc_js($nonce); ?>",
     ajax: "<?php echo admin_url('admin-ajax.php'); ?>",
-    sheet_id: "<?php echo $sheet_id; ?>",
-    range: "<?php echo $range; ?>",
     api_key: "<?php echo $api_key; ?>"
   };
 </script>
@@ -134,81 +123,81 @@ add_action('wp_enqueue_scripts', function () {
 /** -----------------------------------------------------------
  * 4) AJAX: บันทึกค่า settings (ในหน้าแอดมิน)
  * ----------------------------------------------------------- */
-add_action('wp_ajax_cgsd_save_settings', function () {
-    if (!current_user_can('manage_options')) wp_send_json_error('Permission');
-    check_ajax_referer('cgsd_admin', 'nonce');
+// add_action('wp_ajax_cgsd_save_settings', function () {
+//     if (!current_user_can('manage_options')) wp_send_json_error('Permission');
+//     check_ajax_referer('cgsd_admin', 'nonce');
 
-    update_option('cgsd_sheet_id', sanitize_text_field($_POST['sheet_id'] ?? ''));
-    update_option('cgsd_range',    sanitize_text_field($_POST['range'] ?? ''));
-    update_option('cgsd_api_key',  sanitize_text_field($_POST['api_key'] ?? ''));
+//     update_option('cgsd_sheet_id', sanitize_text_field($_POST['sheet_id'] ?? ''));
+//     update_option('cgsd_range',    sanitize_text_field($_POST['range'] ?? ''));
+//     update_option('cgsd_api_key',  sanitize_text_field($_POST['api_key'] ?? ''));
 
-    wp_send_json_success('Saved.');
-});
+//     wp_send_json_success('Saved.');
+// });
 
 /** -----------------------------------------------------------
  * 5) AJAX: Fetch Google Sheets → Save DB
  * ----------------------------------------------------------- */
-add_action('wp_ajax_cgsd_fetch_to_db', function () {
-    if (!current_user_can('manage_options')) wp_send_json_error('Permission');
-    check_ajax_referer('cgsd_admin', 'nonce');
+// add_action('wp_ajax_cgsd_fetch_to_db', function () {
+//     if (!current_user_can('manage_options')) wp_send_json_error('Permission');
+//     check_ajax_referer('cgsd_admin', 'nonce');
 
-    global $wpdb;
-    $table = CGSD_TABLE;
+//     global $wpdb;
+//     $table = CGSD_TABLE;
 
-    $sheet_id = sanitize_text_field($_POST['sheet_id'] ?? get_option('cgsd_sheet_id', ''));
-    $range    = sanitize_text_field($_POST['range']    ?? get_option('cgsd_range', 'Sheet1!A:H'));
-    $api_key  = sanitize_text_field($_POST['api_key']  ?? get_option('cgsd_api_key', ''));
+//     $sheet_id = sanitize_text_field($_POST['sheet_id'] ?? get_option('cgsd_sheet_id', ''));
+//     $range    = sanitize_text_field($_POST['range']    ?? get_option('cgsd_range', 'Sheet1!A:H'));
+//     $api_key  = sanitize_text_field($_POST['api_key']  ?? get_option('cgsd_api_key', ''));
 
-    if (!$sheet_id || !$api_key) wp_send_json_error('Missing Sheet ID or API Key');
+//     if (!$sheet_id || !$api_key) wp_send_json_error('Missing Sheet ID or API Key');
 
-    $url = "https://sheets.googleapis.com/v4/spreadsheets/{$sheet_id}/values/{$range}?key={$api_key}";
-    $res = wp_remote_get($url, ['timeout' => 20]);
-    if (is_wp_error($res)) wp_send_json_error('HTTP error: '.$res->get_error_message());
+//     $url = "https://sheets.googleapis.com/v4/spreadsheets/{$sheet_id}/values/{$range}?key={$api_key}";
+//     $res = wp_remote_get($url, ['timeout' => 20]);
+//     if (is_wp_error($res)) wp_send_json_error('HTTP error: '.$res->get_error_message());
 
-    $body = wp_remote_retrieve_body($res);
-    $data = json_decode($body, true);
-    if (empty($data['values']) || count($data['values']) < 2) {
-        wp_send_json_error('No data values');
-    }
+//     $body = wp_remote_retrieve_body($res);
+//     $data = json_decode($body, true);
+//     if (empty($data['values']) || count($data['values']) < 2) {
+//         wp_send_json_error('No data values');
+//     }
 
-    $headers = array_shift($data['values']); // แถวหัวตาราง
-    // เคลียร์ตารางก่อน
-    $wpdb->query("TRUNCATE TABLE $table");
+//     $headers = array_shift($data['values']); // แถวหัวตาราง
+//     // เคลียร์ตารางก่อน
+//     $wpdb->query("TRUNCATE TABLE $table");
 
-    $count = 0;
-    foreach ($data['values'] as $row) {
-        $obj = [];
-        foreach ($headers as $i => $h) {
-            $obj[$h] = $row[$i] ?? '';
-        }
+//     $count = 0;
+//     foreach ($data['values'] as $row) {
+//         $obj = [];
+//         foreach ($headers as $i => $h) {
+//             $obj[$h] = $row[$i] ?? '';
+//         }
 
-        $agency   = trim($obj['Agency Name'] ?? '');
-        if ($agency === '') continue;
+//         $agency   = trim($obj['Agency Name'] ?? '');
+//         if ($agency === '') continue;
 
-        $website  = trim($obj['Website'] ?? '');
-        $facebook = trim($obj['Facebook Page'] ?? '');
-        $phone    = trim($obj['Phone Number'] ?? '');
-        $logo     = trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? ''));
-        $desc     = trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? ''));
+//         $website  = trim($obj['Website'] ?? '');
+//         $facebook = trim($obj['Facebook Page'] ?? '');
+//         $phone    = trim($obj['Phone Number'] ?? '');
+//         $logo     = trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? ''));
+//         $desc     = trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? ''));
 
-        $first    = mb_strtoupper(mb_substr($agency, 0, 1, 'UTF-8'));
-        if (!preg_match('/[A-Z]/u', $first)) $first = '0-9';
+//         $first    = mb_strtoupper(mb_substr($agency, 0, 1, 'UTF-8'));
+//         if (!preg_match('/[A-Z]/u', $first)) $first = '0-9';
 
-        $wpdb->insert($table, [
-            'agency_name'  => $agency,
-            'website'      => $website,
-            'facebook'     => $facebook,
-            'phone'        => $phone,
-            'logo'         => $logo,
-            'meta_desc'    => $desc,
-            'first_letter' => $first,
-            'updated_at'   => current_time('mysql'),
-        ]);
-        $count++;
-    }
+//         $wpdb->insert($table, [
+//             'agency_name'  => $agency,
+//             'website'      => $website,
+//             'facebook'     => $facebook,
+//             'phone'        => $phone,
+//             'logo'         => $logo,
+//             'meta_desc'    => $desc,
+//             'first_letter' => $first,
+//             'updated_at'   => current_time('mysql'),
+//         ]);
+//         $count++;
+//     }
 
-    wp_send_json_success("Imported {$count} rows to DB.");
-});
+//     wp_send_json_success("Imported {$count} rows to DB.");
+// });
 
 /** -----------------------------------------------------------
  * 6) AJAX: ล้าง Database
@@ -243,39 +232,119 @@ function cgsd_get_db_data() {
  * 8) Shortcode: [cgsd_sheet]
  *    แทรก container แล้วให้ JS ไปดึงจาก DB
  * ----------------------------------------------------------- */
-add_shortcode('cgsd_sheet', function () {
+add_shortcode('cgsd_sheet', function ($atts) {
     global $wpdb;
 
-    cgsd_maybe_create_table(); // ✅ ตรวจและสร้างตารางก่อน
+    // 🧩 อ่าน attributes
+    $atts = shortcode_atts([
+        'sheet_id' => '',
+        'range'    => '',
+        'api_key'  => get_option('cgsd_api_key', ''),
+        'force_refresh' => false,
+    ], $atts);
 
-    $rows = $wpdb->get_results("
-        SELECT agency_name, website, facebook, phone, logo, meta_desc, first_letter
-        FROM " . CGSD_TABLE . "
-        ORDER BY first_letter ASC, agency_name ASC
-    ", ARRAY_A);
+    $sheet_id = sanitize_text_field($atts['sheet_id']);
+    $range    = sanitize_text_field($atts['range']);
+    $api_key  = sanitize_text_field($atts['api_key']);
 
-    if (empty($rows)) {
-        return '<p class="text-gray-600">No data found in database. (Please fetch data first.)</p>';
+    if (!$sheet_id || !$range || !$api_key) {
+        return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
     }
 
+    // 🧩 สร้าง table name เฉพาะสำหรับแต่ละ shortcode
+    // ใช้ hash ป้องกันชื่อยาว / อักษรพิเศษ
+    $hash = substr(md5($sheet_id . $range), 0, 8);
+    $table = $wpdb->prefix . 'get_data_sheets_' . $hash;
+
+    // ✅ ตรวจว่ามีตารางนี้หรือยัง ถ้ายัง → สร้างใหม่
+    $exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table));
+    if ($exists !== $table) {
+        $charset = $wpdb->get_charset_collate();
+        $sql = "CREATE TABLE $table (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            agency_name VARCHAR(255) DEFAULT '' NOT NULL,
+            website TEXT,
+            facebook TEXT,
+            phone VARCHAR(50),
+            logo TEXT,
+            meta_desc TEXT,
+            first_letter VARCHAR(8) DEFAULT '',
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_letter (first_letter),
+            KEY idx_agency (agency_name)
+        ) $charset;";
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
+    }
+
+    // 🔍 ตรวจว่ามีข้อมูลหรือยัง
+    $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM $table");
+
+    // ถ้ายังไม่มีข้อมูล หรือ force_refresh = true → ดึงใหม่จาก Google Sheets
+    if (!$count || filter_var($atts['force_refresh'], FILTER_VALIDATE_BOOLEAN)) {
+        $url = "https://sheets.googleapis.com/v4/spreadsheets/{$sheet_id}/values/{$range}?key={$api_key}";
+        $res = wp_remote_get($url, ['timeout' => 20]);
+        if (is_wp_error($res)) {
+            return '<p class="text-red-600">HTTP Error: ' . esc_html($res->get_error_message()) . '</p>';
+        }
+
+        $body = wp_remote_retrieve_body($res);
+        $data = json_decode($body, true);
+        if (empty($data['values']) || count($data['values']) < 2) {
+            return '<p class="text-gray-600">No data found in Google Sheet.</p>';
+        }
+
+        // เคลียร์ข้อมูลเก่า
+        $wpdb->query("TRUNCATE TABLE $table");
+
+        $headers = array_shift($data['values']);
+        $inserted = 0;
+        foreach ($data['values'] as $row) {
+            $obj = [];
+            foreach ($headers as $i => $h) $obj[$h] = $row[$i] ?? '';
+
+            $agency = trim($obj['Agency Name'] ?? '');
+            if ($agency === '') continue;
+
+            $wpdb->insert($table, [
+                'agency_name'  => $agency,
+                'website'      => trim($obj['Website'] ?? ''),
+                'facebook'     => trim($obj['Facebook Page'] ?? ''),
+                'phone'        => trim($obj['Phone Number'] ?? ''),
+                'logo'         => trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? '')),
+                'meta_desc'    => trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? '')),
+                'first_letter' => strtoupper(mb_substr($agency, 0, 1, 'UTF-8')),
+                'updated_at'   => current_time('mysql'),
+            ]);
+            $inserted++;
+        }
+    }
+
+    // 📦 ดึงข้อมูลจากตารางนี้
+    $rows = $wpdb->get_results("SELECT * FROM $table ORDER BY first_letter ASC, agency_name ASC", ARRAY_A);
+    if (empty($rows)) {
+        return '<p class="text-gray-600">No data in this sheet.</p>';
+    }
+
+    // ✅ สร้าง HTML พร้อม H3 (สำหรับ TOC)
     $html = '<div class="cgsd-tailwind">';
     $current_letter = null;
 
     foreach ($rows as $r) {
-        $agency   = trim($r['agency_name'] ?? '');
-        $website  = trim($r['website'] ?? '');
-        $facebook = trim($r['facebook'] ?? '');
-        $phone    = trim($r['phone'] ?? '');
-        $logo     = trim($r['logo'] ?? '');
-        $desc     = trim($r['meta_desc'] ?? '');
-        $letter   = strtoupper($r['first_letter'] ?? '0-9');
+        $agency   = trim($r['agency_name']);
+        $website  = trim($r['website']);
+        $facebook = trim($r['facebook']);
+        $phone    = trim($r['phone']);
+        $logo     = trim($r['logo']);
+        $desc     = trim($r['meta_desc']);
+        $letter   = strtoupper($r['first_letter']);
         $initial  = mb_substr($agency, 0, 1, 'UTF-8');
 
-        // ✅ ใส่ H3 สำหรับ Table of Contents
         if ($letter !== $current_letter) {
             $current_letter = $letter;
             $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-                  . 'รายชื่อ Agency ประเภทหมวด  ' . esc_html($letter) . '</h3>';
+                  . 'หมวด ' . esc_html($letter) . '</h3>';
         }
 
         $html .= '
@@ -294,21 +363,9 @@ add_shortcode('cgsd_sheet', function () {
             <p class="text-[14px] font-bold text-[#0B284D] mb-[5px]">' . esc_html($agency) . '</p>
             ' . ($desc ? '<p class="text-[14px] text-gray-900 leading-4 h-[35px] overflow-hidden mb-0">' . esc_html($desc) . '</p>' : '') . '
             <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
-              ' . ($website ? '
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
-                  <a href="' . esc_url($website) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($website) . '</a>
-                </div>' : '') . '
-              ' . ($facebook ? '
-                <div class="flex items-center gap-2">
-                  <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
-                  <a href="' . esc_url($facebook) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($agency) . '</a>
-                </div>' : '') . '
-              ' . ($phone ? '
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
-                  <a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="text-[#0B284D] text-[12px]">' . esc_html($phone) . '</a>
-                </div>' : '') . '
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($website) . '</a></div>' : '') . '
+              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($agency) . '</a></div>' : '') . '
+              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="text-[#0B284D] text-[12px]">' . esc_html($phone) . '</a></div>' : '') . '
             </div>
           </div>
         </article>';
@@ -319,23 +376,3 @@ add_shortcode('cgsd_sheet', function () {
 });
 
 
-function cgsd_maybe_create_table() {
-    global $wpdb;
-    $table = $wpdb->prefix . 'get_data_sheets';
-    if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table)) === $table) return;
-
-    $charset = $wpdb->get_charset_collate();
-    $sql = "CREATE TABLE IF NOT EXISTS $table (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        agency_name VARCHAR(255) DEFAULT '' NOT NULL,
-        website TEXT, facebook TEXT, phone VARCHAR(50), logo TEXT,
-        meta_desc TEXT, first_letter VARCHAR(8) DEFAULT '',
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY (id)
-    ) $charset;";
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
-}
-
-register_activation_hook(__FILE__, 'cgsd_maybe_create_table');
-add_action('admin_init', 'cgsd_maybe_create_table');
