@@ -245,16 +245,80 @@ function cgsd_get_db_data() {
  *    แทรก container แล้วให้ JS ไปดึงจาก DB
  * ----------------------------------------------------------- */
 add_shortcode('cgsd_sheet', function () {
-    // ให้แน่ใจว่า frontend.js ถูกโหลด (หากยังไม่ถูก enqueue ในธีม)
-    cgsd_maybe_create_table();
-    if (!wp_script_is('cgsd-frontend', 'enqueued')) {
-        wp_enqueue_script('cgsd-frontend');
-        wp_localize_script('cgsd-frontend', 'cgsd_vars', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-        ]);
+    global $wpdb;
+
+    cgsd_maybe_create_table(); // ✅ ตรวจและสร้างตารางก่อน
+
+    $rows = $wpdb->get_results("
+        SELECT agency_name, website, facebook, phone, logo, meta_desc, first_letter
+        FROM " . CGSD_TABLE . "
+        ORDER BY first_letter ASC, agency_name ASC
+    ", ARRAY_A);
+
+    if (empty($rows)) {
+        return '<p class="text-gray-600">No data found in database. (Please fetch data first.)</p>';
     }
-    return '<div id="cgsd-container"></div>';
+
+    $html = '<div class="cgsd-tailwind">';
+    $current_letter = null;
+
+    foreach ($rows as $r) {
+        $agency   = trim($r['agency_name'] ?? '');
+        $website  = trim($r['website'] ?? '');
+        $facebook = trim($r['facebook'] ?? '');
+        $phone    = trim($r['phone'] ?? '');
+        $logo     = trim($r['logo'] ?? '');
+        $desc     = trim($r['meta_desc'] ?? '');
+        $letter   = strtoupper($r['first_letter'] ?? '0-9');
+        $initial  = mb_substr($agency, 0, 1, 'UTF-8');
+
+        // ✅ ใส่ H3 สำหรับ Table of Contents
+        if ($letter !== $current_letter) {
+            $current_letter = $letter;
+            $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
+                  . 'หมวด ' . esc_html($letter) . '</h3>';
+        }
+
+        $html .= '
+        <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
+          <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-[#0B284D] items-center justify-center">
+            ' . (
+                $logo
+                ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full h-full object-contain" />'
+                : '<div class="w-full h-full bg-white/10 text-white flex items-center justify-center font-bold text-xl">'
+                    . esc_html($initial) .
+                  '</div>'
+            ) . '
+          </div>
+          <div class="hidden sm:block w-px bg-gray-200"></div>
+          <div class="flex-1 px-3 py-[10px] text-left">
+            <p class="text-[14px] font-bold text-[#0B284D] mb-[5px]">' . esc_html($agency) . '</p>
+            ' . ($desc ? '<p class="text-[14px] text-gray-900 leading-4 h-[35px] overflow-hidden mb-0">' . esc_html($desc) . '</p>' : '') . '
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
+              ' . ($website ? '
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
+                  <a href="' . esc_url($website) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($website) . '</a>
+                </div>' : '') . '
+              ' . ($facebook ? '
+                <div class="flex items-center gap-2">
+                  <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
+                  <a href="' . esc_url($facebook) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($agency) . '</a>
+                </div>' : '') . '
+              ' . ($phone ? '
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
+                  <a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="text-[#0B284D] text-[12px]">' . esc_html($phone) . '</a>
+                </div>' : '') . '
+            </div>
+          </div>
+        </article>';
+    }
+
+    $html .= '</div>';
+    return $html;
 });
+
 
 function cgsd_maybe_create_table() {
     global $wpdb;
