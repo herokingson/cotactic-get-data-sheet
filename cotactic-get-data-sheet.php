@@ -360,8 +360,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
           </div>
           <div class="hidden sm:block w-px bg-gray-200"></div>
           <div class="flex-1 px-3 py-[10px] text-left">
-            <p class="text-[14px] font-bold text-[#0B284D] mb-[5px]">' . esc_html($agency) . '</p>
-            ' . ($desc ? '<p class="text-[14px] text-gray-900 leading-4 h-[35px] overflow-hidden mb-0">' . esc_html($desc) . '</p>' : '') . '
+            <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
+            ' . ($desc ? '<p class="text-[14px] text-gray-900  leading-4 h-[50px] md:h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
             <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
               ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a></div>' : '') . '
               ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a></div>' : '') . '
