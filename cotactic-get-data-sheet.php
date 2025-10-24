@@ -364,7 +364,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
             ) . '
           </div>
           <div class="hidden sm:block w-px bg-gray-200"></div>
-          <div class="flex-1 px-3 py-[7px] text-left">
+          <div class="flex-1 px-3 py-[4px] md:py-[7px] text-left">
             <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
             ' . ($desc ? '<p class="text-[14px] text-gray-900  leading-4 h-[50px] md:h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
             <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
