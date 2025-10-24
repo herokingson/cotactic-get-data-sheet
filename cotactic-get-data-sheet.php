@@ -114,7 +114,7 @@ function cgsd_admin_page()
 }
 
 /** -----------------------------------------------------------
- * 3) Enqueue JS (admin + frontend)
+ * 3) Enqueue JS (admin)
  * ----------------------------------------------------------- */
 add_action('admin_enqueue_scripts', function ($hook) {
     if ($hook !== 'toplevel_page_cgsd-db') return;
@@ -125,8 +125,7 @@ add_action('wp_enqueue_scripts', function () {
     // fontawesome (ทางเลือก)
     wp_enqueue_style('cgsd-fa', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css', [], '6.5.0');
     // css เสริม (วางไฟล์เองได้)
-    wp_enqueue_style('cgsd-frontend', plugins_url('dist/css/app.css', __FILE__), [], CGSD_VER);
-    wp_enqueue_script('cgsd-frontend', plugins_url('dist/js/frontend.js', __FILE__), [], CGSD_VER, true);
+    wp_enqueue_style('cgsd', plugins_url('dist/css/app.css', __FILE__), [], CGSD_VER);
     wp_localize_script('cgsd-frontend', 'cgsd_vars', [
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
@@ -276,7 +275,7 @@ add_shortcode('cgsd_sheet', function () {
         if ($letter !== $current_letter) {
             $current_letter = $letter;
             $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-                  . 'หมวด ' . esc_html($letter) . '</h3>';
+                  . 'รายชื่อ Agency ประเภทหมวด  ' . esc_html($letter) . '</h3>';
         }
 
         $html .= '
