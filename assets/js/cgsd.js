@@ -213,13 +213,16 @@ function buildPPTocManually() {
   });
 
   // เพิ่ม smooth scroll ทุก TOC
-  document.querySelectorAll(".pp-toc__list a[href^='#']").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = document.querySelector(a.getAttribute("href"));
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .querySelectorAll(".pp-toc__list-wrapper a[href^='#']")
+    .forEach((a) => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute("href"));
+        if (target)
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     });
-  });
 
   console.log(`🎯 เพิ่มหัวข้อทั้งหมด ${heads.length} หัวข้อเสร็จเรียบร้อย`);
 }
