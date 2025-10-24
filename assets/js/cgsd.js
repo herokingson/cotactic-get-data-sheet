@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // --------------------- ส่วนจัดการ Table of Contents ---------------------
-const CONTAINER_SEL = ".content-blog";
+const CONTAINER_SEL = ".cgsd-tailwind";
 const TOC_WRAPPER = ".pp-toc, #pp-toc-ad5b393";
 
 function refreshPowerPackTOC() {
@@ -184,10 +184,10 @@ function buildPPTocManually() {
     if (spinner) spinner.remove();
 
     // ✅ สร้าง ul ใหม่
-    let listWrap = toc.querySelector(".pp-toc__list");
+    let listWrap = toc.querySelector(".pp-toc__list-wrapper");
     if (!listWrap) {
       listWrap = document.createElement("ul");
-      listWrap.className = "pp-toc__list";
+      listWrap.className = "pp-toc__list-wrapper";
       body.appendChild(listWrap);
     } else {
       listWrap.innerHTML = "";
