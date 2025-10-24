@@ -1,233 +1,42 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const container = document.getElementById("cgsd-container");
-  if (!container) return;
+(function ($) {
+  const $msg = $("#cgsd_msg");
 
-  // 🔄 แสดงสถานะโหลด
-  container.innerHTML = `
-    <div class="cgsd-loadding">
-      <div class="text-gray-500 py-6 flex flex-col items-center">
-        <div>
-          <svg viewBox="25 25 50 50">
-            <circle r="20" cy="50" cx="50"></circle>
-          </svg>
-        </div>
-        <div>Loading Google Sheet data...</div>
-      </div>
-    </div>`;
-
-  try {
-    const res = await fetch(`${cgsd_vars.ajax_url}?action=cgsd_get_data`);
-    const json = await res.json();
-    if (!json.success) throw new Error(json.data);
-
-    const values = json.data;
-    const headers = values[0];
-    const rows = values.slice(1);
-    const idxAgency = headers.indexOf("Agency Name");
-
-    if (idxAgency === -1) {
-      container.innerHTML = `<p class="text-red-600">ไม่พบคอลัมน์ Agency Name</p>`;
-      return;
-    }
-
-    // ✅ เรียงตามชื่อ A-Z
-    rows.sort((a, b) => (a[idxAgency] || "").localeCompare(b[idxAgency] || ""));
-
-    let html = '<div class="cgsd-tailwind">';
-    let currentLetter = null;
-
-    rows.forEach((r) => {
-      const obj = {};
-      headers.forEach((h, i) => (obj[h] = r[i] || ""));
-
-      const agency = (obj["Agency Name"] || "").trim();
-      if (!agency) return;
-
-      const desc =
-        obj["Meta Description (EN)"] || obj["Meta Description (TH)"] || "";
-      const logo = obj["URL Logo"] || obj["Logo URL"] || "";
-      const website = obj["Website"] || "";
-      const facebook = obj["Facebook Page"] || "";
-      const phone = obj["Phone Number"] || "";
-
-      const firstLetter = /^[A-Z]/i.test(agency[0])
-        ? agency[0].toUpperCase()
-        : "0-9";
-      if (firstLetter !== currentLetter) {
-        currentLetter = firstLetter;
-        html += `<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0 text-left">รายชื่อ Agency หมวด ${firstLetter}</h3>`;
-      }
-
-      const initial = agency[0].toUpperCase();
-
-      html += `
-        <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
-          <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-gradient-to-br from-[#0B284D] to-[#0B284D] items-center justify-center">
-            ${
-              logo
-                ? `<img src="${logo}" loading="lazy" alt="${agency} logo" class="w-full h-full object-contain drop-shadow" />`
-                : `<div class="w-full h-full bg-white/10 text-white font-semibold flex items-center justify-center text-xl">${initial}</div>`
-            }
-          </div>
-          <div class="hidden sm:block w-px bg-gray-200"></div>
-          <div class="flex-1 px-3 py-[10px] text-left">
-            <p class="text-[14px] font-bold font-sarabun mb-[5px] text-[#0B284D]">${agency}</p>
-            ${
-              desc
-                ? `<p class="text-[14px] font-sarabun leading-4 text-gray-900 h-[35px] overflow-hidden mb-0">${desc}</p>`
-                : ""
-            }
-            <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
-              ${
-                website
-                  ? `<div class="flex items-center gap-2">
-                      <i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i>
-                      <a href="${
-                        website.startsWith("http")
-                          ? website
-                          : "https://" + website
-                      }" target="_blank" class="underline text-[#0B284D] text-[12px]">${website}</a>
-                    </div>`
-                  : ""
-              }
-              ${
-                facebook
-                  ? `<div class="flex items-center gap-2">
-                      <i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i>
-                      <a href="${
-                        facebook.startsWith("http")
-                          ? facebook
-                          : "https://" + facebook
-                      }" target="_blank" class="underline text-[#0B284D] text-[12px]">${agency}</a>
-                    </div>`
-                  : ""
-              }
-              ${
-                phone
-                  ? `<div class="flex items-center gap-2">
-                      <i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i>
-                      <a href="tel:${phone.replace(
-                        /\D+/g,
-                        ""
-                      )}" class="text-[#0B284D] text-[12px]">${phone}</a>
-                    </div>`
-                  : ""
-              }
-            </div>
-          </div>
-        </article>`;
-    });
-
-    html += "</div>";
-    container.innerHTML = html;
-
-    // ✅ โหลด Table of Contents ใหม่หลังโหลดข้อมูลครบ
-    setTimeout(() => {
-      refreshPowerPackTOC();
-    }, 500);
-  } catch (err) {
-    container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
-    console.error("CGSD Fetch Error ❌", err);
-  }
-});
-
-// --------------------- ส่วนจัดการ Table of Contents ---------------------
-const CONTAINER_SEL = ".cgsd-tailwind";
-const TOC_WRAPPER = ".pp-toc, #pp-toc-ad5b393";
-
-function refreshPowerPackTOC() {
-  console.log("🔁 เริ่มรีเฟรช PowerPack TOC...");
-
-  // 1️⃣ พยายามรีเฟรชผ่าน elementor handler ก่อน
-  if (
-    typeof window.ppTocHandler !== "undefined" &&
-    typeof window.ppTocHandler.populateTOC === "function"
-  ) {
-    try {
-      window.ppTocHandler.populateTOC();
-      console.log("✅ PowerPack TOC รีเฟรชผ่าน handler สำเร็จ");
-      return;
-    } catch (err) {
-      console.warn("⚠️ Handler error:", err);
-    }
-  }
-
-  // 2️⃣ ถ้าไม่มี handler → ใช้ fallback
-  buildPPTocManually();
-}
-
-function buildPPTocManually() {
-  const host = document.querySelector(CONTAINER_SEL);
-  if (!host) {
-    console.warn("⚠️ ไม่พบ container สำหรับสร้าง TOC");
-    return;
-  }
-
-  // 🔹 ดึงทุก TOC ที่ต้องการอัปเดต
-  const tocs = document.querySelectorAll(TOC_WRAPPER);
-  if (!tocs.length) {
-    console.warn("⚠️ ไม่พบ TOC element ตาม selector:", TOC_WRAPPER);
-    return;
-  }
-
-  const heads = host.querySelectorAll("h2, h3");
-  if (!heads.length) {
-    console.warn("⚠️ ไม่พบหัวข้อ h2/h3 ใน container");
-    return;
-  }
-
-  console.log(`🧩 กำลังสร้าง TOC ทั้งหมด ${tocs.length} จุด...`);
-
-  tocs.forEach((toc) => {
-    // ล้าง spinner
-    const body = toc.querySelector(".pp-toc__body");
-    if (!body) return;
-    const spinner = body.querySelector(".pp-toc__spinner-container");
-    if (spinner) spinner.remove();
-
-    // ✅ หา wrapper หลักก่อน
-    let wrapper = toc.querySelector(".pp-toc__list-wrapper");
-    if (!wrapper) {
-      wrapper = document.createElement("ul");
-      wrapper.className = "pp-toc__list-wrapper";
-      body.appendChild(wrapper);
-    }
-
-    // ✅ สร้าง ul list ใหม่ แล้วใส่ไว้ใน wrapper (ไม่ใช่ใน body ตรงๆ)
-    const list = document.createElement("ul");
-    list.className = "pp-toc__list";
-
-    // ✅ เพิ่มรายการ h3 ทั้งหมดใน level-1
-    let idx = 0;
-    heads.forEach((h) => {
-      if (!h.id) h.id = `pp-toc__heading-${idx++}`;
-      const li = document.createElement("li");
-      li.className = `pp-toc__list-item level-1`;
-      li.innerHTML = `
-        <div class="pp-toc__list-item-text-wrapper">
-          <a href="#${
-            h.id
-          }" class="pp-toc__list-item-text">${h.textContent.trim()}</a>
-        </div>`;
-      list.appendChild(li);
-    });
-
-    // ✅ ต่อท้ายใน wrapper เดิม (appendChild จะต่อท้ายของเก่า)
-    wrapper.appendChild(list);
-
-    console.log(
-      `✅ TOC (${toc.id || "no-id"}) สร้าง list ใหม่ใน wrapper สำเร็จ`
-    );
+  $("#cgsd_toggle_api").on("change", function () {
+    const $inp = $("#cgsd_api_key");
+    $inp.attr("type", this.checked ? "text" : "password");
   });
 
-  // ✅ เพิ่ม smooth scroll ให้ทุกลิงก์
-  document.querySelectorAll(".pp-toc__list a[href^='#']").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = document.querySelector(a.getAttribute("href"));
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  $("#cgsd_save_settings").on("click", async function () {
+    $msg.text("Saving...");
+    const res = await $.post(CGSD_ADMIN.ajax, {
+      action: "cgsd_save_settings",
+      nonce: CGSD_ADMIN.nonce,
+      sheet_id: $("#cgsd_sheet_id").val(),
+      range: $("#cgsd_range").val(),
+      api_key: $("#cgsd_api_key").val(),
     });
+    $msg.text(res.success ? "Saved." : "Error: " + res.data);
   });
 
-  console.log(`🎯 เพิ่มหัวข้อทั้งหมด ${heads.length} หัวข้อเสร็จเรียบร้อย`);
-}
+  $("#cgsd_fetch").on("click", async function () {
+    $msg.text("Fetching from Google Sheets and saving to DB...");
+    const res = await $.post(CGSD_ADMIN.ajax, {
+      action: "cgsd_fetch_to_db",
+      nonce: CGSD_ADMIN.nonce,
+      sheet_id: $("#cgsd_sheet_id").val(),
+      range: $("#cgsd_range").val(),
+      api_key: $("#cgsd_api_key").val(),
+    });
+    $msg.text(res.success ? res.data : "Error: " + res.data);
+  });
+
+  $("#cgsd_clear").on("click", async function () {
+    if (!confirm("ล้างข้อมูลทั้งหมดใน DB ?")) return;
+    $msg.text("Clearing database...");
+    const res = await $.post(CGSD_ADMIN.ajax, {
+      action: "cgsd_clear_db",
+      nonce: CGSD_ADMIN.nonce,
+    });
+    $msg.text(res.success ? res.data : "Error: " + res.data);
+  });
+})(jQuery);

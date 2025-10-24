@@ -31,6 +31,9 @@
  animation: dash4 1.5s ease-in-out infinite;
 }
 
+.cgsd-loading { text-align:center; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes rotate4 {
  100% {
   transform: rotate(360deg);

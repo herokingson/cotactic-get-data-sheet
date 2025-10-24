@@ -8,6 +8,7 @@ mix.browserSync({
 mix
   .setPublicPath("dist")
   .js("assets/js/cgsd.js", "js")
+  .js("assets/js/frontend.js", "js")
   .copy("assets/images/*", "dist/images")
   .sass("./assets/scss/app.scss", "/css")
   .options({
