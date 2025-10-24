@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (letter !== current) {
         current = letter;
-        html += `<h3 class="text-xl font-bold mt-6 mb-2 text-[#0B284D] border-b border-gray-200 pb-1">หมวด ${letter}</h3>`;
+        html += `<h3 class="text-xl font-bold mt-6 mb-2 text-[#0B284D] border-b border-gray-200 pb-1">รายชื่อ Agency ประเภทหมวด  ${letter}</h3>`;
       }
 
       const initial = agency ? agency[0].toUpperCase() : "?";
