@@ -122,7 +122,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     container.innerHTML = html;
 
     // ✅ โหลด Table of Contents ใหม่หลังโหลดข้อมูลครบ
-    refreshPowerPackTOC();
+    setTimeout(() => {
+      refreshPowerPackTOC();
+    }, 500);
   } catch (err) {
     container.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
     console.error("CGSD Fetch Error ❌", err);
@@ -194,44 +196,37 @@ function buildPPTocManually() {
     }
 
     let idx = 0;
-    let currentH2 = null; // เก็บ li ของ h2 ล่าสุด เพื่อใช้เพิ่ม h3 เป็นลูก
+    let currentParent = null; // ใช้จำ h2 ล่าสุด
 
     heads.forEach((h) => {
       if (!h.id) h.id = `pp-toc__heading-${idx++}`;
-      const level = h.tagName.toLowerCase() === "h2" ? 0 : 1;
+      const isH2 = h.tagName.toLowerCase() === "h2";
 
-      if (level === 0) {
-        // 🔹 หัวข้อหลัก (H2)
-        const li = document.createElement("li");
-        li.className = "pp-toc__list-item level-0";
-        li.innerHTML = `
-          <div class="pp-toc__list-item-text-wrapper">
-            <a href="#${h.id}" class="pp-toc__list-item-text pp-toc__top-level">
-              ${h.textContent.trim()}
-            </a>
-          </div>
-        `;
-        mainList.appendChild(li);
-        currentH2 = li; // เก็บ li ล่าสุดไว้ใช้ต่อ
-      } else if (level === 1 && currentH2) {
-        // 🔹 หัวข้อย่อย (H3) — ต้องอยู่ใน H2 ล่าสุด
-        let subList = currentH2.querySelector(".pp-toc__list-wrapper");
+      const li = document.createElement("li");
+      li.className = `pp-toc__list-item ${isH2 ? "level-0" : "level-1"}`;
+      li.innerHTML = `
+        <div class="pp-toc__list-item-text-wrapper">
+          <a href="#${h.id}" class="pp-toc__list-item-text ${
+        isH2 ? "pp-toc__top-level" : ""
+      }">${h.textContent.trim()}</a>
+        </div>`;
+
+      if (isH2) {
+        // ถ้าเป็น h2 → ต่อที่ root
+        listWrap.appendChild(li);
+        currentParent = li;
+      } else if (currentParent) {
+        // ถ้าเป็น h3 → ซ้อนใน h2 ล่าสุด
+        let subList = currentParent.querySelector("ul.pp-toc__list-wrapper");
         if (!subList) {
           subList = document.createElement("ul");
           subList.className = "pp-toc__list-wrapper";
-          currentH2.appendChild(subList);
+          currentParent.appendChild(subList);
         }
-
-        const subLi = document.createElement("li");
-        subLi.className = "pp-toc__list-item level-1";
-        subLi.innerHTML = `
-          <div class="pp-toc__list-item-text-wrapper">
-            <a href="#${h.id}" class="pp-toc__list-item-text">
-              ${h.textContent.trim()}
-            </a>
-          </div>
-        `;
-        subList.appendChild(subLi);
+        subList.appendChild(li);
+      } else {
+        // ถ้าไม่มี h2 ก่อนหน้า → ใส่ root ไปก่อน
+        listWrap.appendChild(li);
       }
     });
 
