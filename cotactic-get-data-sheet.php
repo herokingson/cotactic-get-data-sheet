@@ -246,6 +246,7 @@ function cgsd_get_db_data() {
  * ----------------------------------------------------------- */
 add_shortcode('cgsd_sheet', function () {
     // ให้แน่ใจว่า frontend.js ถูกโหลด (หากยังไม่ถูก enqueue ในธีม)
+    cgsd_maybe_create_table();
     if (!wp_script_is('cgsd-frontend', 'enqueued')) {
         wp_enqueue_script('cgsd-frontend');
         wp_localize_script('cgsd-frontend', 'cgsd_vars', [
@@ -275,8 +276,3 @@ function cgsd_maybe_create_table() {
 
 register_activation_hook(__FILE__, 'cgsd_maybe_create_table');
 add_action('admin_init', 'cgsd_maybe_create_table');
-
-add_shortcode('cgsd_sheet', function () {
-    cgsd_maybe_create_table();
-    return '<div id="cgsd-container"></div>';
-});
