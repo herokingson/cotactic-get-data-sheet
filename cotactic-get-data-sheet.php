@@ -344,7 +344,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
         if ($letter !== $current_letter) {
             $current_letter = $letter;
             $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-                  . 'หมวด ' . esc_html($letter) . '</h3>';
+                  . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
         }
 
         $html .= '
@@ -363,9 +363,9 @@ add_shortcode('cgsd_sheet', function ($atts) {
             <p class="text-[14px] font-bold text-[#0B284D] mb-[5px]">' . esc_html($agency) . '</p>
             ' . ($desc ? '<p class="text-[14px] text-gray-900 leading-4 h-[35px] overflow-hidden mb-0">' . esc_html($desc) . '</p>' : '') . '
             <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
-              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($website) . '</a></div>' : '') . '
-              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline text-[#0B284D] text-[12px]">' . esc_html($agency) . '</a></div>' : '') . '
-              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="text-[#0B284D] text-[12px]">' . esc_html($phone) . '</a></div>' : '') . '
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a></div>' : '') . '
+              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a></div>' : '') . '
+              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</a></div>' : '') . '
             </div>
           </div>
         </article>';
@@ -374,5 +374,3 @@ add_shortcode('cgsd_sheet', function ($atts) {
     $html .= '</div>';
     return $html;
 });
-
-
