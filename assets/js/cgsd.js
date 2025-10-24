@@ -163,7 +163,6 @@ function buildPPTocManually() {
     return;
   }
 
-  // 🔹 ดึง TOC ทั้งหมดในหน้า
   const tocs = document.querySelectorAll(TOC_WRAPPER);
   if (!tocs.length) {
     console.warn("⚠️ ไม่พบ TOC element ตาม selector:", TOC_WRAPPER);
@@ -179,24 +178,24 @@ function buildPPTocManually() {
   console.log(`🧩 กำลังสร้าง TOC ทั้งหมด ${tocs.length} จุด...`);
 
   tocs.forEach((toc) => {
-    // ล้าง spinner ออก
     const body = toc.querySelector(".pp-toc__body");
     if (!body) return;
+
     const spinner = body.querySelector(".pp-toc__spinner-container");
     if (spinner) spinner.remove();
 
-    // ✅ สร้าง ul หลัก
-    let mainList = toc.querySelector(".pp-toc__list");
-    if (!mainList) {
-      mainList = document.createElement("ul");
-      mainList.className = "pp-toc__list";
-      body.appendChild(mainList);
+    // ✅ ประกาศ listWrap ก่อนใช้งาน
+    let listWrap = toc.querySelector(".pp-toc__list");
+    if (!listWrap) {
+      listWrap = document.createElement("ul");
+      listWrap.className = "pp-toc__list";
+      body.appendChild(listWrap);
     } else {
-      mainList.innerHTML = "";
+      listWrap.innerHTML = "";
     }
 
     let idx = 0;
-    let currentParent = null; // ใช้จำ h2 ล่าสุด
+    let currentParent = null; // h2 ล่าสุด
 
     heads.forEach((h) => {
       if (!h.id) h.id = `pp-toc__heading-${idx++}`;
@@ -212,11 +211,11 @@ function buildPPTocManually() {
         </div>`;
 
       if (isH2) {
-        // ถ้าเป็น h2 → ต่อที่ root
+        // h2 → ต่อใน root list
         listWrap.appendChild(li);
         currentParent = li;
       } else if (currentParent) {
-        // ถ้าเป็น h3 → ซ้อนใน h2 ล่าสุด
+        // h3 → ซ้อนใน h2 ล่าสุด
         let subList = currentParent.querySelector("ul.pp-toc__list-wrapper");
         if (!subList) {
           subList = document.createElement("ul");
@@ -225,7 +224,7 @@ function buildPPTocManually() {
         }
         subList.appendChild(li);
       } else {
-        // ถ้าไม่มี h2 ก่อนหน้า → ใส่ root ไปก่อน
+        // กรณีไม่มี h2 ก่อนหน้า → แปะไว้ root
         listWrap.appendChild(li);
       }
     });
@@ -233,7 +232,7 @@ function buildPPTocManually() {
     console.log(`✅ สร้าง TOC (${toc.id || "no-id"}) สำเร็จ`);
   });
 
-  // ✅ เพิ่ม smooth scroll
+  // ✅ เพิ่ม smooth scroll ทุก TOC
   document.querySelectorAll(".pp-toc__list a[href^='#']").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -242,5 +241,5 @@ function buildPPTocManually() {
     });
   });
 
-  console.log(`🎯 เพิ่มหัวข้อทั้งหมด ${heads.length} หัวข้อเรียบร้อย`);
+  console.log(`🎯 เพิ่มหัวข้อทั้งหมด ${heads.length} หัวข้อเสร็จเรียบร้อย`);
 }
