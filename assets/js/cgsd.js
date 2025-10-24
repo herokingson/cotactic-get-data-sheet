@@ -163,6 +163,7 @@ function buildPPTocManually() {
     return;
   }
 
+  // 🔹 ดึงทุก TOC ที่ต้องการอัปเดต
   const tocs = document.querySelectorAll(TOC_WRAPPER);
   if (!tocs.length) {
     console.warn("⚠️ ไม่พบ TOC element ตาม selector:", TOC_WRAPPER);
@@ -178,61 +179,48 @@ function buildPPTocManually() {
   console.log(`🧩 กำลังสร้าง TOC ทั้งหมด ${tocs.length} จุด...`);
 
   tocs.forEach((toc) => {
+    // ล้าง spinner
     const body = toc.querySelector(".pp-toc__body");
     if (!body) return;
-
     const spinner = body.querySelector(".pp-toc__spinner-container");
     if (spinner) spinner.remove();
 
-    // ✅ ประกาศ listWrap ก่อนใช้งาน
-    let listWrap = toc.querySelector(".pp-toc__list");
-    if (!listWrap) {
-      listWrap = document.createElement("ul");
-      listWrap.className = "pp-toc__list";
-      body.appendChild(listWrap);
-    } else {
-      listWrap.innerHTML = "";
+    // ✅ หา wrapper หลักก่อน
+    let wrapper = toc.querySelector(".pp-toc__list-wrapper");
+    if (!wrapper) {
+      wrapper = document.createElement("ul");
+      wrapper.className = "pp-toc__list-wrapper";
+      body.appendChild(wrapper);
     }
 
-    let idx = 0;
-    let currentParent = null; // h2 ล่าสุด
+    // ✅ สร้าง ul list ใหม่ แล้วใส่ไว้ใน wrapper (ไม่ใช่ใน body ตรงๆ)
+    const list = document.createElement("ul");
+    list.className = "pp-toc__list";
 
+    // ✅ เพิ่มรายการ h3 ทั้งหมดใน level-1
+    let idx = 0;
     heads.forEach((h) => {
       if (!h.id) h.id = `pp-toc__heading-${idx++}`;
-      const isH2 = h.tagName.toLowerCase() === "h2";
-
       const li = document.createElement("li");
-      li.className = `pp-toc__list-item ${isH2 ? "level-0" : "level-1"}`;
+      li.className = `pp-toc__list-item level-1`;
       li.innerHTML = `
         <div class="pp-toc__list-item-text-wrapper">
-          <a href="#${h.id}" class="pp-toc__list-item-text ${
-        isH2 ? "pp-toc__top-level" : ""
-      }">${h.textContent.trim()}</a>
+          <a href="#${
+            h.id
+          }" class="pp-toc__list-item-text">${h.textContent.trim()}</a>
         </div>`;
-
-      if (isH2) {
-        // h2 → ต่อใน root list
-        listWrap.appendChild(li);
-        currentParent = li;
-      } else if (currentParent) {
-        // h3 → ซ้อนใน h2 ล่าสุด
-        let subList = currentParent.querySelector("ul.pp-toc__list-wrapper");
-        if (!subList) {
-          subList = document.createElement("ul");
-          subList.className = "pp-toc__list-wrapper";
-          currentParent.appendChild(subList);
-        }
-        subList.appendChild(li);
-      } else {
-        // กรณีไม่มี h2 ก่อนหน้า → แปะไว้ root
-        listWrap.appendChild(li);
-      }
+      list.appendChild(li);
     });
 
-    console.log(`✅ สร้าง TOC (${toc.id || "no-id"}) สำเร็จ`);
+    // ✅ ต่อท้ายใน wrapper เดิม (appendChild จะต่อท้ายของเก่า)
+    wrapper.appendChild(list);
+
+    console.log(
+      `✅ TOC (${toc.id || "no-id"}) สร้าง list ใหม่ใน wrapper สำเร็จ`
+    );
   });
 
-  // ✅ เพิ่ม smooth scroll ทุก TOC
+  // ✅ เพิ่ม smooth scroll ให้ทุกลิงก์
   document.querySelectorAll(".pp-toc__list a[href^='#']").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
