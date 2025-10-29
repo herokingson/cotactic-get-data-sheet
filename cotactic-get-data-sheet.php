@@ -120,87 +120,9 @@ add_action('wp_enqueue_scripts', function () {
     ]);
 });
 
-/** -----------------------------------------------------------
- * 4) AJAX: บันทึกค่า settings (ในหน้าแอดมิน)
- * ----------------------------------------------------------- */
-// add_action('wp_ajax_cgsd_save_settings', function () {
-//     if (!current_user_can('manage_options')) wp_send_json_error('Permission');
-//     check_ajax_referer('cgsd_admin', 'nonce');
-
-//     update_option('cgsd_sheet_id', sanitize_text_field($_POST['sheet_id'] ?? ''));
-//     update_option('cgsd_range',    sanitize_text_field($_POST['range'] ?? ''));
-//     update_option('cgsd_api_key',  sanitize_text_field($_POST['api_key'] ?? ''));
-
-//     wp_send_json_success('Saved.');
-// });
 
 /** -----------------------------------------------------------
- * 5) AJAX: Fetch Google Sheets → Save DB
- * ----------------------------------------------------------- */
-// add_action('wp_ajax_cgsd_fetch_to_db', function () {
-//     if (!current_user_can('manage_options')) wp_send_json_error('Permission');
-//     check_ajax_referer('cgsd_admin', 'nonce');
-
-//     global $wpdb;
-//     $table = CGSD_TABLE;
-
-//     $sheet_id = sanitize_text_field($_POST['sheet_id'] ?? get_option('cgsd_sheet_id', ''));
-//     $range    = sanitize_text_field($_POST['range']    ?? get_option('cgsd_range', 'Sheet1!A:H'));
-//     $api_key  = sanitize_text_field($_POST['api_key']  ?? get_option('cgsd_api_key', ''));
-
-//     if (!$sheet_id || !$api_key) wp_send_json_error('Missing Sheet ID or API Key');
-
-//     $url = "https://sheets.googleapis.com/v4/spreadsheets/{$sheet_id}/values/{$range}?key={$api_key}";
-//     $res = wp_remote_get($url, ['timeout' => 20]);
-//     if (is_wp_error($res)) wp_send_json_error('HTTP error: '.$res->get_error_message());
-
-//     $body = wp_remote_retrieve_body($res);
-//     $data = json_decode($body, true);
-//     if (empty($data['values']) || count($data['values']) < 2) {
-//         wp_send_json_error('No data values');
-//     }
-
-//     $headers = array_shift($data['values']); // แถวหัวตาราง
-//     // เคลียร์ตารางก่อน
-//     $wpdb->query("TRUNCATE TABLE $table");
-
-//     $count = 0;
-//     foreach ($data['values'] as $row) {
-//         $obj = [];
-//         foreach ($headers as $i => $h) {
-//             $obj[$h] = $row[$i] ?? '';
-//         }
-
-//         $agency   = trim($obj['Agency Name'] ?? '');
-//         if ($agency === '') continue;
-
-//         $website  = trim($obj['Website'] ?? '');
-//         $facebook = trim($obj['Facebook Page'] ?? '');
-//         $phone    = trim($obj['Phone Number'] ?? '');
-//         $logo     = trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? ''));
-//         $desc     = trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? ''));
-
-//         $first    = mb_strtoupper(mb_substr($agency, 0, 1, 'UTF-8'));
-//         if (!preg_match('/[A-Z]/u', $first)) $first = '0-9';
-
-//         $wpdb->insert($table, [
-//             'agency_name'  => $agency,
-//             'website'      => $website,
-//             'facebook'     => $facebook,
-//             'phone'        => $phone,
-//             'logo'         => $logo,
-//             'meta_desc'    => $desc,
-//             'first_letter' => $first,
-//             'updated_at'   => current_time('mysql'),
-//         ]);
-//         $count++;
-//     }
-
-//     wp_send_json_success("Imported {$count} rows to DB.");
-// });
-
-/** -----------------------------------------------------------
- * 6) AJAX: ล้าง Database
+ * 4) AJAX: ล้าง Database
  * ----------------------------------------------------------- */
 add_action('wp_ajax_cgsd_clear_db', function () {
     if (!current_user_can('manage_options')) wp_send_json_error('Permission');
@@ -212,7 +134,7 @@ add_action('wp_ajax_cgsd_clear_db', function () {
 });
 
 /** -----------------------------------------------------------
- * 7) AJAX (public): ดึงข้อมูลจาก DB เพื่อแสดงหน้าเว็บ
+ * 5) AJAX (public): ดึงข้อมูลจาก DB เพื่อแสดงหน้าเว็บ
  * ----------------------------------------------------------- */
 add_action('wp_ajax_nopriv_cgsd_get_db_data', 'cgsd_get_db_data');
 add_action('wp_ajax_cgsd_get_db_data',        'cgsd_get_db_data');
@@ -229,7 +151,7 @@ function cgsd_get_db_data() {
 }
 
 /** -----------------------------------------------------------
- * 8) Shortcode: [cgsd_sheet]
+ * 6) Shortcode: [cgsd_sheet]
  *    แทรก container แล้วให้ JS ไปดึงจาก DB
  * ----------------------------------------------------------- */
 add_shortcode('cgsd_sheet', function ($atts) {
