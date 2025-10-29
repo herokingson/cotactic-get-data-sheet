@@ -42,28 +42,33 @@
 })(jQuery);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 🧭 ย้าย anchor span เข้าไปในหัวข้อจริง
-  document.querySelectorAll(".pp-toc-menu-anchor").forEach((anchor) => {
-    const next = anchor.nextElementSibling;
-    if (next && /^H[1-6]$/.test(next.tagName)) {
-      next.prepend(anchor);
-    }
-  });
-
-  // 🧩 ปรับ offset ตอน scroll ให้หัวข้อไม่โดน header (ถ้ามี fixed header)
-  const tocLinks = document.querySelectorAll(
-    'a[href^="#pp-toc__heading-anchor"]'
-  );
-  tocLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      const id = link.getAttribute("href").substring(1);
-      const target = document.getElementById(id);
-      if (target) {
-        e.preventDefault();
-        const offset = 100; // ปรับได้ตามความสูงของ header
-        const y = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top: y, behavior: "smooth" });
+  function moveAnchors() {
+    document.querySelectorAll(".pp-toc-menu-anchor").forEach(anchor => {
+      const next = anchor.nextElementSibling;
+      if (next && /^H[1-6]$/.test(next.tagName)) {
+        next.prepend(anchor);
       }
     });
+  }
+
+  // 🔁 เรียกตอนโหลดครั้งแรก
+  moveAnchors();
+
+  // 👁 เฝ้าดู DOM ถ้ามี span ใหม่เพิ่มมา (เช่นปลั๊กอิน TOC inject)
+  const observer = new MutationObserver(() => moveAnchors());
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // 🧭 ปรับ scroll offset ตอนคลิก TOC
+  document.addEventListener("click", e => {
+    const link = e.target.closest('a[href^="#pp-toc__heading-anchor"]');
+    if (!link) return;
+    const id = link.getAttribute("href").substring(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    e.preventDefault();
+    const offset = 90; // ปรับตามความสูงของ header ของคุณ
+    const y = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: y, behavior: "smooth" });
   });
 });
