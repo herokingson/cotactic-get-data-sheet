@@ -125,13 +125,33 @@ add_action('wp_enqueue_scripts', function () {
  * 4) AJAX: ล้าง Database
  * ----------------------------------------------------------- */
 add_action('wp_ajax_cgsd_clear_db', function () {
-    if (!current_user_can('manage_options')) wp_send_json_error('Permission');
-    check_ajax_referer('cgsd_admin', 'nonce');
+if (!current_user_can('manage_options')) wp_send_json_error('Permission');
+check_ajax_referer('cgsd_admin', 'nonce');
 
-    global $wpdb;
-    $wpdb->query("TRUNCATE TABLE " . CGSD_TABLE);
-    wp_send_json_success('Database cleared.');
+global $wpdb;
+
+// หา tables ทั้งหมดที่เกี่ยวข้อง: wp_get_data_sheets และ wp_get_data_sheets_*
+$like = $wpdb->esc_like($wpdb->prefix . 'get_data_sheets') . '%';
+$tables = $wpdb->get_col( $wpdb->prepare("SHOW TABLES LIKE %s", $like) );
+
+if (empty($tables)) wp_send_json_success('No related tables found.');
+
+$cleared = 0; $fallback = 0;
+foreach ($tables as $t) {
+// พยายาม TRUNCATE ก่อน (เร็ว)
+$r = $wpdb->query("TRUNCATE TABLE `$t`");
+if ($r === false) {
+// โฮสต์บางเจ้าไม่อนุญาต → ใช้ DELETE + รีเซ็ต AUTO_INCREMENT แทน
+$wpdb->query("DELETE FROM `$t`");
+$wpdb->query("ALTER TABLE `$t` AUTO_INCREMENT = 1");
+$fallback++;
+}
+$cleared++;
+}
+
+wp_send_json_success("Cleared {$cleared} table(s)".($fallback ? " (fallback used on {$fallback})" : ""));
 });
+
 
 /** -----------------------------------------------------------
  * 5) AJAX (public): ดึงข้อมูลจาก DB เพื่อแสดงหน้าเว็บ
@@ -388,4 +408,3 @@ add_action('wp_ajax_cgsd_fetch_to_db', function () {
 
     wp_send_json_success("Imported {$inserted} rows");
 });
-
