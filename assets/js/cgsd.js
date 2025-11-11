@@ -18,26 +18,16 @@
     $msg.text(res.success ? "Saved." : "Error: " + res.data);
   });
 
-  $("#cgsd_fetch").on("click", function () {
+  $("#cgsd_fetch").on("click", async function () {
     $msg.text("Fetching from Google Sheets and saving to DB...");
-    $.ajax({
-      url: CGSD_ADMIN.ajax,
-      method: "POST",
-      dataType: "json",
-      data: {
-        action: "cgsd_fetch_to_db",
-        _ajax_nonce: CGSD_ADMIN.nonce, // 👈 เปลี่ยนชื่อฟิลด์
-        sheet_id: $("#cgsd_sheet_id").val(),
-        range: $("#cgsd_range").val(),
-        api_key: $("#cgsd_api_key").val(),
-      },
-    })
-      .done((res) => $msg.text(res.success ? res.data : "Error: " + res.data))
-      .fail((xhr) =>
-        $msg.text(
-          "HTTP " + xhr.status + ": " + (xhr.responseText || "Bad Request")
-        )
-      );
+    const res = await $.post(CGSD_ADMIN.ajax, {
+      action: "cgsd_fetch_to_db",
+      nonce: CGSD_ADMIN.nonce,
+      sheet_id: $("#cgsd_sheet_id").val(),
+      range: $("#cgsd_range").val(),
+      api_key: $("#cgsd_api_key").val(),
+    });
+    $msg.text(res.success ? res.data : "Error: " + res.data);
   });
 
   $("#cgsd_clear").on("click", async function () {
