@@ -18,16 +18,26 @@
     $msg.text(res.success ? "Saved." : "Error: " + res.data);
   });
 
-  $("#cgsd_fetch").on("click", async function () {
+  $("#cgsd_fetch").on("click", function () {
     $msg.text("Fetching from Google Sheets and saving to DB...");
-    const res = await $.post(CGSD_ADMIN.ajax, {
-      action: "cgsd_fetch_to_db",
-      nonce: CGSD_ADMIN.nonce,
-      sheet_id: $("#cgsd_sheet_id").val(),
-      range: $("#cgsd_range").val(),
-      api_key: $("#cgsd_api_key").val(),
-    });
-    $msg.text(res.success ? res.data : "Error: " + res.data);
+    $.ajax({
+      url: CGSD_ADMIN.ajax,
+      method: "POST",
+      dataType: "json",
+      data: {
+        action: "cgsd_fetch_to_db",
+        _ajax_nonce: CGSD_ADMIN.nonce, // 👈 เปลี่ยนชื่อฟิลด์
+        sheet_id: $("#cgsd_sheet_id").val(),
+        range: $("#cgsd_range").val(),
+        api_key: $("#cgsd_api_key").val(),
+      },
+    })
+      .done((res) => $msg.text(res.success ? res.data : "Error: " + res.data))
+      .fail((xhr) =>
+        $msg.text(
+          "HTTP " + xhr.status + ": " + (xhr.responseText || "Bad Request")
+        )
+      );
   });
 
   $("#cgsd_clear").on("click", async function () {
@@ -43,7 +53,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   function moveAnchors() {
-    document.querySelectorAll(".pp-toc-menu-anchor").forEach(anchor => {
+    document.querySelectorAll(".pp-toc-menu-anchor").forEach((anchor) => {
       const next = anchor.nextElementSibling;
       if (next && /^H[1-6]$/.test(next.tagName)) {
         next.prepend(anchor);
@@ -59,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   observer.observe(document.body, { childList: true, subtree: true });
 
   // 🧭 ปรับ scroll offset ตอนคลิก TOC
-  document.addEventListener("click", e => {
+  document.addEventListener("click", (e) => {
     const link = e.target.closest('a[href^="#pp-toc__heading-anchor"]');
     if (!link) return;
     const id = link.getAttribute("href").substring(1);

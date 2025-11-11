@@ -301,3 +301,21 @@ add_shortcode('cgsd_sheet', function ($atts) {
     $html .= '</div>';
     return $html;
 });
+
+
+// สร้าง nonce
+wp_localize_script('cgsd-admin', 'CGSD_ADMIN', [
+'ajax' => admin_url('admin-ajax.php'),
+'nonce' => wp_create_nonce('cgsd_nonce'),
+]);
+
+// AJAX handler
+add_action('wp_ajax_cgsd_fetch_to_db', 'cgsd_fetch_to_db');
+
+function cgsd_fetch_to_db() {
+check_ajax_referer('cgsd_nonce', 'nonce'); // 👈 ระบุชื่อฟิลด์ให้ตรงกับ JS
+// ... ทำงาน ...
+wp_send_json_success('Imported!');
+}
+
+add_action('wp_ajax_cgsd_fetch_to_db', 'cgsd_fetch_to_db');
