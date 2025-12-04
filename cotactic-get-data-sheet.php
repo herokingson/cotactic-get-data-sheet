@@ -216,7 +216,6 @@ add_shortcode('cgsd_sheet', function ($atts) {
             phone VARCHAR(50),
             logo TEXT,
             meta_desc TEXT,
-            location_map TEXT,
             first_letter VARCHAR(8) DEFAULT '',
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
@@ -263,7 +262,6 @@ add_shortcode('cgsd_sheet', function ($atts) {
         'website' => trim($obj['Website'] ?? ''),
         'facebook' => trim($obj['Facebook Page'] ?? ''),
         'phone' => trim($obj['Phone Number'] ?? ''),
-        'location_map' => trim($obj['Location'] ?? ''),
         'logo' => trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? '')),
         'meta_desc' => trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? '')),
         'first_letter' => strtoupper(mb_substr($agency, 0, 1, 'UTF-8')),
@@ -291,7 +289,6 @@ add_shortcode('cgsd_sheet', function ($atts) {
     $phone = trim($r['phone']);
     $logo = trim($r['logo']);
     $desc = trim($r['meta_desc']);
-    $location = trim($r['location_map']);
     $letter = strtoupper($r['first_letter']);
     $initial = mb_substr($agency, 0, 1, 'UTF-8');
 
@@ -332,7 +329,6 @@ add_shortcode('cgsd_sheet', function ($atts) {
               ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a></div>' : '') . '
               ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a></div>' : '') . '
               ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</a></div>' : '') . '
-              ' . ($location ? '<div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-[#173A63] text-[14px]"></i><a href="https://www.google.com/maps/search/?api=1&query=' . urlencode($location) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($location) . '</a></div>' : '') . '
             </div>
           </div>
         </article>';
