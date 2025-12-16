@@ -305,11 +305,6 @@ add_shortcode('cgsd_sheet', function ($atts) {
 
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
         . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
-
-      // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
-      if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
-        $html .= do_shortcode(esc_attr($cta_template_id));
-      }
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
@@ -334,7 +329,10 @@ add_shortcode('cgsd_sheet', function ($atts) {
           </div>
         </article>';
   }
-
+  // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
+  if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+    $html .= do_shortcode(esc_attr($cta_template_id));
+  }
   $html .= '</div>';
   return $html;
 });
