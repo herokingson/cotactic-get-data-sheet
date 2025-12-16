@@ -308,7 +308,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
 
       // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
       if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
-        $html .= do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]');
+        $html .= do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]');
       }
     }
     $html .= '
