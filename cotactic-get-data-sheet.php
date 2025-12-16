@@ -191,7 +191,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     'api_key' => get_option('cgsd_api_key', ''),
     'force_refresh' => false,
     'cta_template_id' => '', // ID ของ template สำหรับ CTA
-    'cta_type' => 'elementor', // ประเภท: 'elementor' หรือ 'textblock'
+    'cta_type' => '', // ประเภท: 'elementor' หรือ 'textblock'
   ], $atts);
 
   $sheet_id = sanitize_text_field($atts['sheet_id']);
@@ -200,17 +200,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $cta_template_id = sanitize_text_field($atts['cta_template_id']);
   $cta_type = sanitize_text_field($atts['cta_type']);
 
-  // Debug: แสดงข้อผิดพลาดที่ชัดเจน
-  $missing = [];
-  if (!$sheet_id)
-    $missing[] = 'sheet_id';
-  if (!$range)
-    $missing[] = 'range';
-  if (!$api_key)
-    $missing[] = 'api_key';
-
-  if (!empty($missing)) {
-    return '<p class="text-red-600">⚠️ Missing parameters: ' . implode(', ', $missing) . '</p>';
+  if (!$sheet_id || !$range || !$api_key) {
+    return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
   }
 
   // 🧩 สร้าง table name เฉพาะสำหรับแต่ละ shortcode
@@ -252,17 +243,9 @@ add_shortcode('cgsd_sheet', function ($atts) {
     }
 
     $body = wp_remote_retrieve_body($res);
-    $response_code = wp_remote_retrieve_response_code($res);
     $data = json_decode($body, true);
-
-    // Debug: แสดงข้อผิดพลาดจาก Google API
-    if ($response_code !== 200) {
-      $error_msg = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown error';
-      return '<p class="text-red-600">⚠️ Google Sheets API Error (Code: ' . $response_code . '): ' . esc_html($error_msg) . '</p>';
-    }
-
     if (empty($data['values']) || count($data['values']) < 2) {
-      return '<p class="text-gray-600">No data found in Google Sheet (range: ' . esc_html($range) . ')</p>';
+      return '<p class="text-gray-600">No data found in Google Sheet.</p>';
     }
 
     // เคลียร์ข้อมูลเก่า
