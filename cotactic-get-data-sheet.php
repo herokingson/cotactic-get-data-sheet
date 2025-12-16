@@ -189,11 +189,13 @@ add_shortcode('cgsd_sheet', function ($atts) {
     'range' => '',
     'api_key' => get_option('cgsd_api_key', ''),
     'force_refresh' => false,
+    'cta_template_id' => '', // ID ของ Elementor template สำหรับ CTA
   ], $atts);
 
   $sheet_id = sanitize_text_field($atts['sheet_id']);
   $range = sanitize_text_field($atts['range']);
   $api_key = sanitize_text_field($atts['api_key']);
+  $cta_template_id = sanitize_text_field($atts['cta_template_id']);
 
   if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
@@ -301,15 +303,14 @@ add_shortcode('cgsd_sheet', function ($atts) {
       $current_letter = $letter;
       $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
 
-      // แทรก shortcode ทุก 3 หมวด
-      if ($category_count > 1 && ($category_count - 1) % 3 === 0) {
-        $html .= do_shortcode('[text-blocks id="11763"]');
-      }
-
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
         . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
-    }
 
+      // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
+      if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+        $html .= do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]');
+      }
+    }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
           <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-[#0B284D] items-center justify-center">
