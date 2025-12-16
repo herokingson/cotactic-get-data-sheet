@@ -118,6 +118,13 @@ add_action('wp_enqueue_scripts', function () {
   wp_enqueue_style('cgsd-fa', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css', [], '6.5.0');
   // css เสริม (วางไฟล์เองได้)
   wp_enqueue_style('cgsd', plugins_url('dist/css/app.css', __FILE__), [], CGSD_VER);
+
+  // เพิ่มการโหลด Elementor frontend scripts (ถ้ามี Elementor)
+  if (did_action('elementor/loaded')) {
+    \Elementor\Plugin::instance()->frontend->enqueue_scripts();
+    \Elementor\Plugin::instance()->frontend->enqueue_styles();
+  }
+
   wp_localize_script('cgsd-frontend', 'cgsd_vars', [
     'ajax_url' => admin_url('admin-ajax.php'),
   ]);
@@ -331,15 +338,15 @@ add_shortcode('cgsd_sheet', function ($atts) {
             </div>
           </div>
         </article>';
-  }
-  // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
-  if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
-    if ($cta_type === 'textblock') {
-      $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
-    } else {
-      // Default: elementor
-      $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
-    }
+        // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
+        if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+          if ($cta_type === 'textblock') {
+            $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+          } else {
+            // Default: elementor
+            $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+          }
+        }
   }
   $html .= '</div>';
   return $html;
