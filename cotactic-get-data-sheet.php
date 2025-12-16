@@ -293,6 +293,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $html = '<div class="cgsd-tailwind">';
   $current_letter = null;
   $category_count = 0; // นับจำนวนหมวด
+  $previous_letter = null; // เก็บหมวดก่อนหน้า
 
   foreach ($rows as $r) {
     $agency = trim($r['agency_name']);
@@ -310,10 +311,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
     }
 
     if ($letter !== $current_letter) {
-      $current_letter = $letter;
-      $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
-      // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
-      if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+      // ถ้ามีหมวดก่อนหน้าและครบ 3, 6, 9 หมวด → แทรก CTA ก่อนเปลี่ยนหมวด
+      if ($previous_letter !== null && $category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
         if ($cta_type === 'textblock') {
           $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
         } else {
@@ -321,6 +320,11 @@ add_shortcode('cgsd_sheet', function ($atts) {
           $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
         }
       }
+
+      $previous_letter = $current_letter;
+      $current_letter = $letter;
+      $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
+
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
         . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
     }
@@ -342,12 +346,23 @@ add_shortcode('cgsd_sheet', function ($atts) {
             <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
               ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a></div>' : '') . '
               ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a></div>' : '') . '
-              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</a></div>' : '') . '
+              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</a></div>' : '') . '
             </div>
           </div>
         </article>';
 
   }
+
+  // ✅ แทรก CTA หลังจากหมวดสุดท้าย (ถ้าครบ 3, 6, 9 หมวดพอดี)
+  if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+    if ($cta_type === 'textblock') {
+      $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+    } else {
+      // Default: elementor
+      $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+    }
+  }
+
   $html .= '</div>';
   return $html;
 });
