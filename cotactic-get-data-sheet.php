@@ -312,7 +312,15 @@ add_shortcode('cgsd_sheet', function ($atts) {
     if ($letter !== $current_letter) {
       $current_letter = $letter;
       $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
-
+      // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
+      if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
+        if ($cta_type === 'textblock') {
+          $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+        } else {
+          // Default: elementor
+          $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+        }
+      }
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
         . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
     }
@@ -338,15 +346,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
             </div>
           </div>
         </article>';
-        // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
-        if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
-          if ($cta_type === 'textblock') {
-            $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
-          } else {
-            // Default: elementor
-            $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
-          }
-        }
+
   }
   $html .= '</div>';
   return $html;
