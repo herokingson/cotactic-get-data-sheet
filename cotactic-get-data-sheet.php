@@ -2,6 +2,7 @@
 /**
  * Plugin Name: Cotactic Google Sheets → DB
  * Description: ดึง Google Sheets มาเก็บใน DB (get_data_sheets) แล้วค่อยดึงจาก DB มาแสดงผล + ปุ่ม Fetch/Clear ในแอดมิน
+ * จะมีส่วน CTA สำหรับ Elementor หรือ Text Block หากรับพารามิเตอร์ cta_type = elementor หรือ textblock ได้ และใส่ id ของ template
  * Version:     2.0.0
  * Author:      Cotactic
  */
@@ -189,13 +190,15 @@ add_shortcode('cgsd_sheet', function ($atts) {
     'range' => '',
     'api_key' => get_option('cgsd_api_key', ''),
     'force_refresh' => false,
-    'cta_template_id' => '', // ID ของ Elementor template สำหรับ CTA
+    'cta_template_id' => '', // ID ของ template สำหรับ CTA
+    'cta_type' => 'elementor', // ประเภท: 'elementor' หรือ 'textblock'
   ], $atts);
 
   $sheet_id = sanitize_text_field($atts['sheet_id']);
   $range = sanitize_text_field($atts['range']);
   $api_key = sanitize_text_field($atts['api_key']);
   $cta_template_id = sanitize_text_field($atts['cta_template_id']);
+  $cta_type = sanitize_text_field($atts['cta_type']);
 
   if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
@@ -331,7 +334,12 @@ add_shortcode('cgsd_sheet', function ($atts) {
   }
   // แทรก shortcode หลังจากแสดงหมวดครบทุก 3 หมวด (หลังหมวดที่ 3, 6, 9, ...)
   if ($category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
-    $html .= do_shortcode(esc_attr($cta_template_id));
+    if ($cta_type === 'textblock') {
+      $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+    } else {
+      // Default: elementor
+      $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+    }
   }
   $html .= '</div>';
   return $html;
