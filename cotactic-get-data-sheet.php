@@ -314,10 +314,10 @@ add_shortcode('cgsd_sheet', function ($atts) {
       // ถ้ามีหมวดก่อนหน้าและครบ 3, 6, 9 หมวด → แทรก CTA ก่อนเปลี่ยนหมวด
       if ($previous_letter !== null && $category_count > 0 && $category_count % 3 === 0 && !empty($cta_template_id)) {
         if ($cta_type === 'textblock') {
-          $html .= '<div class="cta-banner">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+          $html .= '<div class="cta-banner" style="padding:0;">' . do_shortcode('[text-blocks id="' . esc_attr($cta_template_id) . '"]') . '</div>';
         } else {
           // Default: elementor
-          $html .= '<div class="cta-banner">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
+          $html .= '<div class="cta-banner" style="padding:0;">' . do_shortcode('[elementor-template id="' . esc_attr($cta_template_id) . '"]') . '</div>';
         }
       }
 
