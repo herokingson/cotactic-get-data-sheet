@@ -209,6 +209,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $cta_type = sanitize_text_field($atts['cta_type']);
   $headText = sanitize_text_field($atts['headText']);
   echo $headText . 'ggg';
+  echo $range . 'ggg';
+
   if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
   }
