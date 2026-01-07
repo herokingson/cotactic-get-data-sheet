@@ -228,6 +228,9 @@ add_shortcode('cgsd_sheet', function ($atts) {
             phone VARCHAR(50),
             logo TEXT,
             meta_desc TEXT,
+            caption TEXT,
+            contact TEXT,
+            pic_website TEXT,
             first_letter VARCHAR(8) DEFAULT '',
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
@@ -236,6 +239,15 @@ add_shortcode('cgsd_sheet', function ($atts) {
         ) $charset;";
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
+  } else {
+    // ✅ ตารางมีอยู่แล้ว → ตรวจสอบและเพิ่ม columns ที่ขาด
+    $columns = $wpdb->get_col("SHOW COLUMNS FROM $table");
+    $required_columns = ['caption', 'contact', 'pic_website'];
+    foreach ($required_columns as $col) {
+      if (!in_array($col, $columns)) {
+        $wpdb->query("ALTER TABLE $table ADD COLUMN $col TEXT");
+      }
+    }
   }
 
   // 🔍 ตรวจว่ามีข้อมูลหรือยัง
@@ -276,6 +288,9 @@ add_shortcode('cgsd_sheet', function ($atts) {
         'phone' => trim($obj['Phone Number'] ?? ''),
         'logo' => trim(($obj['URL Logo'] ?? '') ?: ($obj['Logo URL'] ?? '')),
         'meta_desc' => trim(($obj['Meta Description (EN)'] ?? '') ?: ($obj['Meta Description (TH)'] ?? '')),
+        'caption' => trim($obj['Caption'] ?? ''),
+        'contact' => trim($obj['Contact'] ?? ''),
+        'pic_website' => trim($obj['URL Website'] ?? ''),
         'first_letter' => strtoupper(mb_substr($agency, 0, 1, 'UTF-8')),
         'updated_at' => current_time('mysql'),
       ]);
@@ -302,6 +317,9 @@ add_shortcode('cgsd_sheet', function ($atts) {
     $phone = trim($r['phone']);
     $logo = trim($r['logo']);
     $desc = trim($r['meta_desc']);
+    $caption = trim($r['caption'] ?? '');
+    $contact = trim($r['contact'] ?? '');
+    $pic_website = trim($r['pic_website'] ?? '');
     $letter = strtoupper($r['first_letter']);
     $initial = mb_substr($agency, 0, 1, 'UTF-8');
 
@@ -343,12 +361,27 @@ add_shortcode('cgsd_sheet', function ($atts) {
           <div class="flex-1 px-3 py-[4px] md:py-[7px] text-left">
             <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
             ' . ($desc ? '<p class="text-[14px] text-gray-900 line-clamp-2 leading-4 h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
-            <div class="mt-2 flex flex-wrap items-center gap-x-3 text-sm">
-              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($website) . '</a></div>' : '') . '
-              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($agency) . '</a></div>' : '') . '
-              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all md:block hidden">' . esc_html($phone) . '</a></div>' : '') . '
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html(preg_replace('#^https?://#', '', $website)) . '</a></div>' : '') . '
+              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($agency) . '</a></div>' : '') . '
+              ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($phone) . '</a></div>' : '') . '
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-[#0B284D] text-[14px]"></i><a href="https://www.google.com/maps/search/' . urlencode($agency) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Google Map</a></div>' : '') . '
             </div>
           </div>
+          ' . (($caption || $contact || $pic_website) ? '
+          <div class="flex items-center pr-3">
+            <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-[#e69816] text-white text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
+              data-agency="' . esc_attr($agency) . '"
+              data-logo="' . esc_attr($logo) . '"
+              data-caption="' . esc_attr($caption) . '"
+              data-contact="' . esc_attr($contact) . '"
+              data-website="' . esc_attr($website) . '"
+              data-facebook="' . esc_attr($facebook) . '"
+              data-phone="' . esc_attr($phone) . '"
+              data-picwebsite="' . esc_attr($pic_website) . '">
+              ดูเพิ่มเติม
+            </button>
+          </div>' : '') . '
         </article>';
 
   }
@@ -364,6 +397,77 @@ add_shortcode('cgsd_sheet', function ($atts) {
   }
 
   $html .= '</div>';
+
+  // 🔥 Add Popup Modal HTML with Tailwind CSS
+  $html .= '
+  <div id="cgsd-popup-modal" class="fixed inset-0 z-[99999] hidden items-center justify-center">
+    <div class="cgsd-modal-overlay absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+    <div class="relative bg-white rounded-2xl max-w-[600px] w-[90%] max-h-[80vh] overflow-y-auto shadow-2xl animate-[cgsd-in_0.3s_ease]">
+      <button type="button" class="cgsd-modal-close absolute top-3 right-3 w-8 h-8 border-none bg-gray-100 rounded-full text-xl cursor-pointer flex items-center justify-center transition-all z-10 hover:bg-gray-200">&times;</button>
+      <div class="flex items-center gap-4 p-5 border-b border-gray-200 bg-[#0B284D] rounded-t-2xl">
+        <img id="cgsd-modal-logo" src="" alt="" class="w-20 h-20 object-contain bg-white rounded-lg p-1" />
+        <h3 id="cgsd-modal-agency" class="text-white text-lg font-bold m-0"></h3>
+      </div>
+      <div class="p-5">
+        <img id="cgsd-modal-picwebsite" src="" alt="" class="w-full rounded-lg mb-4 hidden" />
+        <div id="cgsd-modal-caption" class="mb-4 text-sm leading-relaxed text-gray-700"></div>
+        <div id="cgsd-modal-contact" class="mb-4 text-sm text-gray-600"></div>
+      </div>
+    </div>
+  </div>
+  <style>
+  @keyframes cgsd-in{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  #cgsd-popup-modal.flex{display:flex}
+  </style>
+  <script>
+  document.addEventListener("DOMContentLoaded",function(){
+    var modal=document.getElementById("cgsd-popup-modal");
+    if(!modal)return;
+    var overlay=modal.querySelector(".cgsd-modal-overlay");
+    var closeBtn=modal.querySelector(".cgsd-modal-close");
+    var modalLogo=document.getElementById("cgsd-modal-logo");
+    var modalAgency=document.getElementById("cgsd-modal-agency");
+    var modalPicwebsite=document.getElementById("cgsd-modal-picwebsite");
+    var modalCaption=document.getElementById("cgsd-modal-caption");
+    var modalContact=document.getElementById("cgsd-modal-contact");
+    // var modalLinks=document.getElementById("cgsd-modal-links");
+    document.querySelectorAll(".cgsd-popup-btn").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        var agency=this.dataset.agency||"";
+        var logo=this.dataset.logo||"";
+        var caption=this.dataset.caption||"";
+        var contact=this.dataset.contact||"";
+        var website=this.dataset.website||"";
+        var facebook=this.dataset.facebook||"";
+        var phone=this.dataset.phone||"";
+        var picwebsite=this.dataset.picwebsite||"";
+        modalAgency.textContent=agency;
+        modalLogo.src=logo||"";
+        modalLogo.style.display=logo?"block":"none";
+        modalPicwebsite.src=picwebsite||"";
+        modalPicwebsite.style.display=picwebsite?"block":"none";
+        modalPicwebsite.classList.toggle("hidden",!picwebsite);
+        modalCaption.innerHTML=caption;
+        modalContact.innerHTML=contact;
+        var linksHtml="";
+        var linkClass="inline-flex items-center gap-2 py-2 px-4 bg-gray-100 rounded-lg text-[#0B284D] no-underline text-[13px] transition-all hover:bg-[#0B284D] hover:text-white";
+        if(website)linksHtml+="<a href=\""+website+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-solid fa-globe\"></i> เว็บไซต์</a>";
+        if(facebook)linksHtml+="<a href=\""+facebook+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-brands fa-facebook-f\"></i> Facebook</a>";
+        if(phone)linksHtml+="<a href=\"tel:"+phone.replace(/\\D/g,"")+"\" class=\""+linkClass+"\"><i class=\"fa-solid fa-phone\"></i> "+phone+"</a>";
+        linksHtml+="<a href=\"https://www.google.com/maps/search/"+encodeURIComponent(agency)+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-solid fa-location-dot\"></i> Google Map</a>";
+        // modalLinks.innerHTML=linksHtml;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.style.overflow="hidden";
+      });
+    });
+    function closeModal(){modal.classList.add("hidden");modal.classList.remove("flex");document.body.style.overflow="";}
+    overlay.addEventListener("click",closeModal);
+    closeBtn.addEventListener("click",closeModal);
+    document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
+  });
+  </script>';
+
   return $html;
 });
 

@@ -59,3 +59,9 @@
 .cta-banner .gv2{
   @apply w-full;
 }
+
+@media (min-width: 768px) {
+  .hidden.md\:block {
+    display: block !important;
+  }
+}
