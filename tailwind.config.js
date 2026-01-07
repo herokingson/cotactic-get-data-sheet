@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   corePlugins: { preflight: false },
-  important: [".cgsd-tailwind","cgsd-loadding"],
+  important: ".cgsd-tailwind",
   content: [
     "./template/**/*.php",
     "./**/*.php",
