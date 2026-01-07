@@ -347,7 +347,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
       $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
 
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-        . $headtext . esc_html($letter) . '</h3>';
+        . $headtext . ' ' . esc_html($letter) . '</h3>';
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
