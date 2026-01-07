@@ -65,3 +65,22 @@
     display: block !important;
   }
 }
+
+// Responsive Popup Modal
+#cgsd-popup-modal > div:nth-child(2) {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: 0 !important;
+}
+
+@media (min-width: 768px) {
+  #cgsd-popup-modal > div:nth-child(2) {
+    width: 90% !important;
+    height: auto !important;
+    max-width: 768px !important;
+    max-height: 80vh !important;
+    border-radius: 16px !important;
+  }
+}
