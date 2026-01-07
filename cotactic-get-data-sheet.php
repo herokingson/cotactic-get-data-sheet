@@ -199,6 +199,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     'force_refresh' => false,
     'cta_template_id' => '', // ID ของ template สำหรับ CTA
     'cta_type' => '', // ประเภท: 'elementor' หรือ 'textblock'
+    'headText' => '',
   ], $atts);
 
   $sheet_id = sanitize_text_field($atts['sheet_id']);
@@ -206,6 +207,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $api_key = sanitize_text_field($atts['api_key']);
   $cta_template_id = sanitize_text_field($atts['cta_template_id']);
   $cta_type = sanitize_text_field($atts['cta_type']);
+  $headText = sanitize_text_field($atts['headText']);
 
   if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
@@ -344,7 +346,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
       $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
 
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-        . 'รายชื่อ Agency ประเภทหมวด ' . esc_html($letter) . '</h3>';
+        . esc_html($headText) . esc_html($letter) . '</h3>';
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
@@ -402,8 +404,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $html .= '
   <div id="cgsd-popup-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;">
     <div class="cgsd-modal-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);"></div>
-    <div style="position:relative;background:#fff;border-radius:16px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
-      <button type="button" class="cgsd-modal-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;background:#f3f4f6;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">&times;</button>
+    <div class="relative bg-white rounded-2xl md:max-w-[768px] md:w-[90%] md:max-h-[80vh] w-full h-full overflow-y-auto shadow-2xl">
+      <button type="button" class="cgsd-modal-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;background:unset;color:#fff;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">&times;</button>
       <div style="display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid #e5e7eb;background:#0B284D;border-radius:16px 16px 0 0;">
         <img id="cgsd-modal-logo" src="" alt="" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;" />
         <h3 id="cgsd-modal-agency" style="color:#fff;font-size:18px;font-weight:700;margin:0;"></h3>
