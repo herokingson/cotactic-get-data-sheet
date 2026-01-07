@@ -370,7 +370,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
           </div>
           ' . (($caption || $contact || $pic_website) ? '
           <div class="flex items-center pr-3">
-            <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-[#e69816] text-white text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
+            <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-[#e69816] text-black border-none text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
               data-agency="' . esc_attr($agency) . '"
               data-logo="' . esc_attr($logo) . '"
               data-caption="' . esc_attr($caption) . '"
@@ -430,40 +430,26 @@ add_shortcode('cgsd_sheet', function ($atts) {
     var modalPicwebsite=document.getElementById("cgsd-modal-picwebsite");
     var modalCaption=document.getElementById("cgsd-modal-caption");
     var modalContact=document.getElementById("cgsd-modal-contact");
-    // var modalLinks=document.getElementById("cgsd-modal-links");
     document.querySelectorAll(".cgsd-popup-btn").forEach(function(btn){
       btn.addEventListener("click",function(){
         var agency=this.dataset.agency||"";
         var logo=this.dataset.logo||"";
         var caption=this.dataset.caption||"";
         var contact=this.dataset.contact||"";
-        var website=this.dataset.website||"";
-        var facebook=this.dataset.facebook||"";
-        var phone=this.dataset.phone||"";
         var picwebsite=this.dataset.picwebsite||"";
-        modalAgency.textContent=agency;
-        modalLogo.src=logo||"";
-        modalLogo.style.display=logo?"block":"none";
-        modalPicwebsite.src=picwebsite||"";
-        modalPicwebsite.style.display=picwebsite?"block":"none";
-        modalPicwebsite.classList.toggle("hidden",!picwebsite);
-        modalCaption.innerHTML=caption;
-        modalContact.innerHTML=contact;
-        var linksHtml="";
-        var linkClass="inline-flex items-center gap-2 py-2 px-4 bg-gray-100 rounded-lg text-[#0B284D] no-underline text-[13px] transition-all hover:bg-[#0B284D] hover:text-white";
-        if(website)linksHtml+="<a href=\""+website+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-solid fa-globe\"></i> เว็บไซต์</a>";
-        if(facebook)linksHtml+="<a href=\""+facebook+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-brands fa-facebook-f\"></i> Facebook</a>";
-        if(phone)linksHtml+="<a href=\"tel:"+phone.replace(/\\D/g,"")+"\" class=\""+linkClass+"\"><i class=\"fa-solid fa-phone\"></i> "+phone+"</a>";
-        linksHtml+="<a href=\"https://www.google.com/maps/search/"+encodeURIComponent(agency)+"\" target=\"_blank\" class=\""+linkClass+"\"><i class=\"fa-solid fa-location-dot\"></i> Google Map</a>";
-        // modalLinks.innerHTML=linksHtml;
+        if(modalAgency)modalAgency.textContent=agency;
+        if(modalLogo){modalLogo.src=logo||"";modalLogo.style.display=logo?"block":"none";}
+        if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";modalPicwebsite.classList.toggle("hidden",!picwebsite);}
+        if(modalCaption)modalCaption.innerHTML=caption;
+        if(modalContact)modalContact.innerHTML=contact;
         modal.classList.remove("hidden");
         modal.classList.add("flex");
         document.body.style.overflow="hidden";
       });
     });
     function closeModal(){modal.classList.add("hidden");modal.classList.remove("flex");document.body.style.overflow="";}
-    overlay.addEventListener("click",closeModal);
-    closeBtn.addEventListener("click",closeModal);
+    if(overlay)overlay.addEventListener("click",closeModal);
+    if(closeBtn)closeBtn.addEventListener("click",closeModal);
     document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
   });
   </script>';
