@@ -404,8 +404,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
     <div class="cgsd-modal-overlay absolute inset-0 bg-black/80 backdrop-blur-md"></div>
     <div class="relative bg-white rounded-2xl max-w-[600px] w-[90%] max-h-[80vh] overflow-y-auto shadow-2xl animate-[cgsd-in_0.3s_ease]">
       <button type="button" class="cgsd-modal-close absolute top-3 right-3 w-8 h-8 border-none bg-gray-100 rounded-full text-xl cursor-pointer flex items-center justify-center transition-all z-10 hover:bg-gray-200">&times;</button>
-      <div class="flex items-center gap-4 p-5 border-b border-gray-200 bg-[#0B284D] rounded-t-2xl">
-        <img id="cgsd-modal-logo" src="" alt="" class="w-20 h-20 object-contain bg-white rounded-lg p-1" />
+      <div class="flex items-center gap-4 p-2 border-b border-gray-200 bg-[#0B284D] rounded-t-2xl">
+        <img id="cgsd-modal-logo" src="" alt="" class="w-10 h-10 object-contain bg-white rounded-lg p-1" />
         <h3 id="cgsd-modal-agency" class="text-white text-lg font-bold m-0"></h3>
       </div>
       <div class="p-5">
