@@ -405,7 +405,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $html .= '
   <div id="cgsd-popup-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;">
     <div class="cgsd-modal-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);"></div>
-    <div class="relative bg-white rounded-2xl max-w-[768px] w-[90%] max-h-[80vh] overflow-y-auto shadow-2xl">
+    <div style="position:relative;background:#fff;border-radius:16px;max-width:768px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
       <button type="button" class="cgsd-modal-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;background:unset;color:#fff;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">&times;</button>
       <div style="display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid #e5e7eb;background:#0B284D;border-radius:16px 16px 0 0;">
         <img id="cgsd-modal-logo" src="" alt="" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;" />
