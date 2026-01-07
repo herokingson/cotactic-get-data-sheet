@@ -199,7 +199,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     'force_refresh' => false,
     'cta_template_id' => '', // ID ของ template สำหรับ CTA
     'cta_type' => '', // ประเภท: 'elementor' หรือ 'textblock'
-    'headText' => '',
+    'headtext' => '',
   ], $atts);
 
   $sheet_id = sanitize_text_field($atts['sheet_id']);
@@ -207,9 +207,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $api_key = sanitize_text_field($atts['api_key']);
   $cta_template_id = sanitize_text_field($atts['cta_template_id']);
   $cta_type = sanitize_text_field($atts['cta_type']);
-  $headText = sanitize_text_field($atts['headText']);
-  echo $headText . 'ggg';
-  echo $range . 'ggg';
+  $headtext = sanitize_text_field($atts['headtext']);
+
 
   if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
@@ -348,7 +347,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
       $category_count++; // เพิ่มจำนวนหมวดทุกครั้งที่เจอหมวดใหม่
 
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
-        . $headText . esc_html($letter) . '</h3>';
+        . $headtext . esc_html($letter) . '</h3>';
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
