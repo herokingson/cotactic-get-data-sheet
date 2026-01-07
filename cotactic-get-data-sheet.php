@@ -401,20 +401,23 @@ add_shortcode('cgsd_sheet', function ($atts) {
 
   $html .= '</div>';
 
-  // 🔥 Add Popup Modal HTML with inline styles (outside .cgsd-tailwind scope)
-  $html .= '
+  // 🔥 Add Popup Modal HTML - only once per page
+  static $modal_added = false;
+  if (!$modal_added) {
+    $modal_added = true;
+    $html .= '
   <div id="cgsd-popup-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;">
     <div class="cgsd-modal-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);"></div>
     <div style="position:relative;background:#fff;border-radius:16px;max-width:768px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
       <button type="button" class="cgsd-modal-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;background:unset;color:#fff;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">&times;</button>
       <div style="display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid #e5e7eb;background:#0B284D;border-radius:16px 16px 0 0;">
-        <img id="cgsd-modal-logo" src="" alt="" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;" />
-        <h3 id="cgsd-modal-agency" style="color:#fff;font-size:18px;font-weight:700;margin:0;"></h3>
+        <img class="cgsd-modal-logo" src="" alt="" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;" />
+        <h3 class="cgsd-modal-agency" style="color:#fff;font-size:18px;font-weight:700;margin:0;"></h3>
       </div>
       <div style="padding:20px;">
-        <img id="cgsd-modal-picwebsite" src="" alt="" style="width:100%;border-radius:8px;margin-bottom:16px;display:none;" />
-        <div id="cgsd-modal-caption" style="margin-bottom:16px;font-size:14px;line-height:1.6;color:#374151;"></div>
-        <div id="cgsd-modal-contact" style="margin-bottom:16px;font-size:14px;color:#4b5563;"></div>
+        <img class="cgsd-modal-picwebsite" src="" alt="" style="width:100%;border-radius:8px;margin-bottom:16px;display:none;" />
+        <div class="cgsd-modal-caption" style="margin-bottom:16px;font-size:14px;line-height:1.6;color:#374151;"></div>
+        <div class="cgsd-modal-contact" style="margin-bottom:16px;font-size:14px;color:#4b5563;"></div>
       </div>
     </div>
   </div>
@@ -424,11 +427,11 @@ add_shortcode('cgsd_sheet', function ($atts) {
     if(!modal)return;
     var overlay=modal.querySelector(".cgsd-modal-overlay");
     var closeBtn=modal.querySelector(".cgsd-modal-close");
-    var modalLogo=document.getElementById("cgsd-modal-logo");
-    var modalAgency=document.getElementById("cgsd-modal-agency");
-    var modalPicwebsite=document.getElementById("cgsd-modal-picwebsite");
-    var modalCaption=document.getElementById("cgsd-modal-caption");
-    var modalContact=document.getElementById("cgsd-modal-contact");
+    var modalLogo=modal.querySelector(".cgsd-modal-logo");
+    var modalAgency=modal.querySelector(".cgsd-modal-agency");
+    var modalPicwebsite=modal.querySelector(".cgsd-modal-picwebsite");
+    var modalCaption=modal.querySelector(".cgsd-modal-caption");
+    var modalContact=modal.querySelector(".cgsd-modal-contact");
     document.querySelectorAll(".cgsd-popup-btn").forEach(function(btn){
       btn.addEventListener("click",function(){
         var agency=this.dataset.agency||"";
@@ -436,8 +439,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
         var caption=this.dataset.caption||"";
         var contact=this.dataset.contact||"";
         var picwebsite=this.dataset.picwebsite||"";
-        console.log("Agency:", agency, "Logo:", logo);
-        if(modalAgency){console.log("Setting agency text");modalAgency.textContent=agency;}else{console.log("modalAgency not found");}
+        if(modalAgency)modalAgency.textContent=agency;
         if(modalLogo){modalLogo.src=logo||"";modalLogo.style.display=logo?"block":"none";}
         if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";}
         if(modalCaption)modalCaption.innerHTML=caption;
@@ -452,6 +454,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
   });
   </script>';
+  }
 
   return $html;
 });
