@@ -373,7 +373,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
           </div>
           ' . (($caption || $contact ) ? '
           <div class="flex items-center pr-3">
-            <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-[#e69816] text-black border-none text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
+            <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-gradient-to-b hover:from-[#FED312] hover:to-[#FFB010] text-black border-none text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
               data-agency="' . esc_attr($agency) . '"
               data-logo="' . esc_attr($logo) . '"
               data-caption="' . esc_attr($caption) . '"
