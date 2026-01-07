@@ -436,7 +436,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
         var caption=this.dataset.caption||"";
         var contact=this.dataset.contact||"";
         var picwebsite=this.dataset.picwebsite||"";
-        if(modalAgency)modalAgency.textContent=agency;
+        console.log("Agency:", agency, "Logo:", logo);
+        if(modalAgency){console.log("Setting agency text");modalAgency.textContent=agency;}else{console.log("modalAgency not found");}
         if(modalLogo){modalLogo.src=logo||"";modalLogo.style.display=logo?"block":"none";}
         if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";}
         if(modalCaption)modalCaption.innerHTML=caption;
