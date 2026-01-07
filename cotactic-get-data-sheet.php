@@ -398,27 +398,23 @@ add_shortcode('cgsd_sheet', function ($atts) {
 
   $html .= '</div>';
 
-  // 🔥 Add Popup Modal HTML with Tailwind CSS
+  // 🔥 Add Popup Modal HTML with inline styles (outside .cgsd-tailwind scope)
   $html .= '
-  <div id="cgsd-popup-modal" class="fixed inset-0 z-[99999] hidden items-center justify-center">
-    <div class="cgsd-modal-overlay absolute inset-0 bg-black/80 backdrop-blur-md"></div>
-    <div class="relative bg-white rounded-2xl max-w-[600px] w-[90%] max-h-[80vh] overflow-y-auto shadow-2xl animate-[cgsd-in_0.3s_ease]">
-      <button type="button" class="cgsd-modal-close absolute top-3 right-3 w-8 h-8 border-none bg-gray-100 rounded-full text-xl cursor-pointer flex items-center justify-center transition-all z-10 hover:bg-gray-200">&times;</button>
-      <div class="flex items-center gap-4 p-5 border-b border-gray-200 bg-[#0B284D] rounded-t-2xl">
-        <img id="cgsd-modal-logo" src="" alt="" class="w-20 h-20 object-contain bg-white rounded-lg p-1" />
-        <h3 id="cgsd-modal-agency" class="text-white text-lg font-bold m-0"></h3>
+  <div id="cgsd-popup-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;">
+    <div class="cgsd-modal-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);"></div>
+    <div style="position:relative;background:#fff;border-radius:16px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+      <button type="button" class="cgsd-modal-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;background:#f3f4f6;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">&times;</button>
+      <div style="display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid #e5e7eb;background:#0B284D;border-radius:16px 16px 0 0;">
+        <img id="cgsd-modal-logo" src="" alt="" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;" />
+        <h3 id="cgsd-modal-agency" style="color:#fff;font-size:18px;font-weight:700;margin:0;"></h3>
       </div>
-      <div class="p-5">
-        <img id="cgsd-modal-picwebsite" src="" alt="" class="w-full rounded-lg mb-4 hidden" />
-        <div id="cgsd-modal-caption" class="mb-4 text-sm leading-relaxed text-gray-700"></div>
-        <div id="cgsd-modal-contact" class="mb-4 text-sm text-gray-600"></div>
+      <div style="padding:20px;">
+        <img id="cgsd-modal-picwebsite" src="" alt="" style="width:100%;border-radius:8px;margin-bottom:16px;display:none;" />
+        <div id="cgsd-modal-caption" style="margin-bottom:16px;font-size:14px;line-height:1.6;color:#374151;"></div>
+        <div id="cgsd-modal-contact" style="margin-bottom:16px;font-size:14px;color:#4b5563;"></div>
       </div>
     </div>
   </div>
-  <style>
-  @keyframes cgsd-in{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  #cgsd-popup-modal.flex{display:flex}
-  </style>
   <script>
   document.addEventListener("DOMContentLoaded",function(){
     var modal=document.getElementById("cgsd-popup-modal");
@@ -439,15 +435,14 @@ add_shortcode('cgsd_sheet', function ($atts) {
         var picwebsite=this.dataset.picwebsite||"";
         if(modalAgency)modalAgency.textContent=agency;
         if(modalLogo){modalLogo.src=logo||"";modalLogo.style.display=logo?"block":"none";}
-        if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";modalPicwebsite.classList.toggle("hidden",!picwebsite);}
+        if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";}
         if(modalCaption)modalCaption.innerHTML=caption;
         if(modalContact)modalContact.innerHTML=contact;
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
+        modal.style.display="flex";
         document.body.style.overflow="hidden";
       });
     });
-    function closeModal(){modal.classList.add("hidden");modal.classList.remove("flex");document.body.style.overflow="";}
+    function closeModal(){modal.style.display="none";document.body.style.overflow="";}
     if(overlay)overlay.addEventListener("click",closeModal);
     if(closeBtn)closeBtn.addEventListener("click",closeModal);
     document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
