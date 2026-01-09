@@ -445,10 +445,10 @@ add_shortcode('cgsd_sheet', function ($atts) {
         if(modalCaption)modalCaption.innerHTML=caption;
         if(modalContact)modalContact.innerHTML=contact;
         modal.style.display="flex";
-        document.body.style.overflow="hidden";
+        document.body.classList.add("cgsd-modal-open");
       });
     });
-    function closeModal(){modal.style.display="none";document.body.style.overflow="";}
+    function closeModal(){modal.style.display="none";document.body.classList.remove("cgsd-modal-open");}
     if(overlay)overlay.addEventListener("click",closeModal);
     if(closeBtn)closeBtn.addEventListener("click",closeModal);
     document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
