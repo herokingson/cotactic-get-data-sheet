@@ -3,10 +3,12 @@ module.exports = {
   corePlugins: { preflight: false },
   important: ".cgsd-tailwind",
   content: [
-    "./template/**/*.php",
     "./**/*.php",
-    "./dist/js/**/*.js", // ✅ เพิ่ม: สแกนไฟล์ JS ด้วย
-    "./*.php",
+    // "./**/*.js",
+    // "./**/*.jsx",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./**/*.html",
   ],
   theme: {
     extend: {
