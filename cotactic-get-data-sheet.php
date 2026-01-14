@@ -351,7 +351,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
-          <div class="flex w-[30%] md:w-[18%] md:min-w-[110px] md:bg-[#0B284D] items-center justify-center">
+          <div class="flex w-[32%] md:w-[18%] md:min-w-[110px] md:bg-[#0B284D] items-center justify-center">
             ' . (
       $logo
       ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full h-full object-contain" />'
