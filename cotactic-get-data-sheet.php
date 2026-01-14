@@ -352,7 +352,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
           <div class="flex flex-col">
-            <div class="flex">
+            <div class="flex items-center">
                 <div class="flex w-[120px] h-[120px] md:bg-[#0B284D] object-contain items-center justify-center">
                     ' . (
       $logo
@@ -363,22 +363,21 @@ add_shortcode('cgsd_sheet', function ($atts) {
     ) . '
                 </div>
                 <div class="flex-1 px-3 py-[4px] md:py-[7px] text-left">
-                  <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
+                  <p class="text-[20px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
                   ' . ($desc ? '<p class="text-[14px] text-gray-900 line-clamp-2 leading-4 h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
                 </div>
             </div>
-                 <div class="flex px-2 min-h-[50px] !border-t !border-t-[rgb(229_231_235)]" style="border-top: 1px solid rgb(229 231 235);">
-                   <div class="mt-1 flex flex-row flex-wrap items-center gap-x-5 md:gap-x-3 gap-y-1 text-sm">
-                      ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Website</a></div>' : '') . '
-                      ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Facebook</a></div>' : '') . '
-                      ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-[#0B284D] text-[14px]"></i><a href="https://www.google.com/maps/search/' . urlencode($agency) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Direction</a></div>' : '') . '
-                      ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($phone) . '</a></div>' : '') . '
+                 <div class="flex pl-2 min-h-[50px] !border-t !border-t-[rgb(229_231_235)]" style="border-top: 1px solid rgb(229 231 235);">
+                   <div class="flex flex-row flex-wrap items-center gap-x-5 md:gap-x-3 gap-y-1 text-sm">
+                      ' . ($website ? '<div class="flex items-center gap-2"><img src="' . plugins_url('dist/images/website-icon.svg', __FILE__) . '" alt="Website" class="w-[18px] h-[18px]" /><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Website</a></div>' : '') . '
+                      ' . ($facebook ? '<div class="flex items-center gap-2"><img src="' . plugins_url('dist/images/facebook-icon.svg', __FILE__) . '" alt="Facebook" class="w-[18px] h-[18px]" /><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Facebook</a></div>' : '') . '
+                      ' . ($website ? '<div class="flex items-center gap-2"><img src="' . plugins_url('dist/images/direction-icon.svg', __FILE__) . '" alt="Direction" class="w-[18px] h-[18px]" /><a href="https://www.google.com/maps/search/' . urlencode($agency) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Direction</a></div>' : '') . '
+                      ' . ($phone ? '<div class="flex items-center gap-2"><img src="' . plugins_url('dist/images/call-icon.svg', __FILE__) . '" alt="Phone" class="w-[18px] h-[18px]" /><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($phone) . '</a></div>' : '') . '
                         ' . (($caption || $contact) ? '
-
                   </div>
-                  <div class="ml-auto pr-3 py-2">
-                      <div class="flex">
-                        <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-gradient-to-b hover:from-[#FED312] hover:to-[#FFB010] text-black border-none text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
+                  <div class="ml-auto">
+                      <div class="flex h-full">
+                        <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-gradient-to-b hover:from-[#FED312] hover:to-[#FFB010] text-black border-none text-[12px] font-bold py-2 px-8 h-full transition-all whitespace-nowrap"
                           data-agency="' . esc_attr($agency) . '"
                           data-logo="' . esc_attr($logo) . '"
                           data-caption="' . esc_attr($caption) . '"
@@ -444,7 +443,8 @@ add_shortcode('cgsd_sheet', function ($atts) {
     var modalCaption=modal.querySelector(".cgsd-modal-caption");
     var modalContact=modal.querySelector(".cgsd-modal-contact");
     document.querySelectorAll(".cgsd-popup-btn").forEach(function(btn){
-      btn.addEventListener("click",function(){
+      btn.addEventListener("click",function(e){
+        e.preventDefault();
         var agency=this.dataset.agency||"";
         var logo=this.dataset.logo||"";
         var caption=this.dataset.caption||"";
@@ -455,11 +455,16 @@ add_shortcode('cgsd_sheet', function ($atts) {
         if(modalPicwebsite){modalPicwebsite.src=picwebsite||"";modalPicwebsite.style.display=picwebsite?"block":"none";}
         if(modalCaption)modalCaption.innerHTML=caption;
         if(modalContact)modalContact.innerHTML=contact;
-        modal.style.display="flex";
+        document.documentElement.classList.add("cgsd-modal-open");
         document.body.classList.add("cgsd-modal-open");
+        modal.style.display="flex";
       });
     });
-    function closeModal(){modal.style.display="none";document.body.classList.remove("cgsd-modal-open");}
+    function closeModal(){
+      modal.style.display="none";
+      document.documentElement.classList.remove("cgsd-modal-open");
+      document.body.classList.remove("cgsd-modal-open");
+    }
     if(overlay)overlay.addEventListener("click",closeModal);
     if(closeBtn)closeBtn.addEventListener("click",closeModal);
     document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});

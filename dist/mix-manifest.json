@@ -1,5 +1,9 @@
 {
     "/js/cgsd.js": "/js/cgsd.js",
     "/js/frontend.js": "/js/frontend.js",
-    "/css/app.css": "/css/app.css"
+    "/css/app.css": "/css/app.css",
+    "/images/call-icon.svg": "/images/call-icon.svg",
+    "/images/direction-icon.svg": "/images/direction-icon.svg",
+    "/images/facebook-icon.svg": "/images/facebook-icon.svg",
+    "/images/website-icon.svg": "/images/website-icon.svg"
 }

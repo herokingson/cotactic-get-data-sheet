@@ -86,9 +86,7 @@
 }
 
 // Lock body scroll when modal is open
+html.cgsd-modal-open,
 body.cgsd-modal-open {
   overflow: hidden !important;
-  position: fixed !important;
-  width: 100% !important;
-  height: 100% !important;
 }
