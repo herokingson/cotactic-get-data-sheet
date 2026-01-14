@@ -351,7 +351,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
     }
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
-          <div class="flex w-[15%] md:min-w-[110px] md:bg-[#0B284D] items-center justify-center">
+          <div class="flex w-[30%] md:w-[18%] md:min-w-[110px] md:bg-[#0B284D] items-center justify-center">
             ' . (
       $logo
       ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full h-full object-contain" />'
@@ -364,15 +364,13 @@ add_shortcode('cgsd_sheet', function ($atts) {
           <div class="flex-1 px-3 py-[4px] md:py-[7px] text-left">
             <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
             ' . ($desc ? '<p class="text-[14px] text-gray-900 line-clamp-2 leading-4 h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
-            <div class="mt-3 flex flex-wrap items-center gap-x-5 md:gap-x-3 gap-y-1 text-sm mb-2 md:mb-0">
-              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html(preg_replace('#^https?://#', '', $website)) . '</a></div>' : '') . '
-              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($agency) . '</a></div>' : '') . '
+            <div class="mt-1 flex flex-wrap items-center gap-x-5 md:gap-x-3 gap-y-1 text-sm mb-2 md:mb-0">
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Website</a></div>' : '') . '
+              ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Facebook</a></div>' : '') . '
               ' . ($phone ? '<div class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-[#173A63] text-[14px]"></i><a href="tel:' . preg_replace('/\\D+/', '', $phone) . '" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($phone) . '</a></div>' : '') . '
-              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-[#0B284D] text-[14px]"></i><a href="https://www.google.com/maps/search/' . urlencode($agency) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Google Map</a></div>' : '') . '
-            </div>
-          </div>
-          ' . (($caption || $contact ) ? '
-          <div class="flex items-center pr-3">
+              ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-[#0B284D] text-[14px]"></i><a href="https://www.google.com/maps/search/' . urlencode($agency) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">Direction</a></div>' : '') . '
+                ' . (($caption || $contact) ? '
+          <div class="ml-auto flex pr-3">
             <button type="button" class="cgsd-popup-btn bg-[#FED312] hover:bg-gradient-to-b hover:from-[#FED312] hover:to-[#FFB010] text-black border-none text-[12px] font-bold py-2 px-4 rounded-full transition-all whitespace-nowrap"
               data-agency="' . esc_attr($agency) . '"
               data-logo="' . esc_attr($logo) . '"
@@ -382,9 +380,12 @@ add_shortcode('cgsd_sheet', function ($atts) {
               data-facebook="' . esc_attr($facebook) . '"
               data-phone="' . esc_attr($phone) . '"
               data-picwebsite="' . esc_attr($pic_website) . '">
-              ดูเพิ่มเติม
+              เพิ่มเติม
             </button>
           </div>' : '') . '
+            </div>
+
+          </div>
         </article>';
 
   }
