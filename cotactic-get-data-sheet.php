@@ -350,11 +350,11 @@ add_shortcode('cgsd_sheet', function ($atts) {
         . $headtext . ' ' . esc_html($letter) . '</h3>';
     }
     $html .= '
-        <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
-          <div class="flex w-1/3 md:w-[15%] min-w-[110px] bg-[#0B284D] items-center justify-center">
+        <article class="relative flex items-stretch rounded-2xl md:ring-1 ring-gray-200 bg-white overflow-hidden mb-4 md:shadow-sm hover:shadow-md transition-all">
+          <div class="flex w-[15%] md:min-w-[110px] md:bg-[#0B284D] items-center justify-center">
             ' . (
       $logo
-      ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full h-full object-contain" />'
+      ? '<img src="' . esc_url($logo) . '" loading="lazy" alt="' . esc_attr($agency) . ' logo" class="w-full md:h-full object-contain rounded-full md:rounded-none shadow-md md:shadow-none" />'
       : '<div class="w-full h-full bg-white/10 text-white flex items-center justify-center font-bold text-xl">'
       . esc_html($initial) .
       '</div>'
@@ -363,7 +363,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
           <div class="hidden sm:block w-px bg-gray-200"></div>
           <div class="flex-1 px-3 py-[4px] md:py-[7px] text-left">
             <p class="text-[14px] font-bold text-[#0B284D] my-[5px]">' . esc_html($agency) . '</p>
-            ' . ($desc ? '<p class="text-[14px] text-gray-900 line-clamp-2 leading-4 h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
+            ' . ($desc ? '<p class="text-[14px] text-gray-900 line-clamp-1 md:line-clamp-2 leading-4 md:h-[35px] overflow-hidden my-0">' . esc_html($desc) . '</p>' : '') . '
             <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
               ' . ($website ? '<div class="flex items-center gap-2"><i class="fa-solid fa-globe text-[#0B284D] text-[14px]"></i><a href="' . esc_url($website) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html(preg_replace('#^https?://#', '', $website)) . '</a></div>' : '') . '
               ' . ($facebook ? '<div class="flex items-center gap-2"><i class="fa-brands fa-facebook-f text-[#0B284D] text-[14px]"></i><a href="' . esc_url($facebook) . '" target="_blank" class="underline break-all text-[#0B284D] hover:opacity-80 text-[13px] font-sarabun transition-all hidden md:block">' . esc_html($agency) . '</a></div>' : '') . '
