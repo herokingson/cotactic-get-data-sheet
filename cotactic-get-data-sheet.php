@@ -120,7 +120,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $headtext = sanitize_text_field($atts['headtext']);
 
 
-  if (!$sheet_id) {
+  if (!$sheet_id || !$range || !$api_key) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
   }
 
