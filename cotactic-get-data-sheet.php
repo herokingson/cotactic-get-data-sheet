@@ -120,7 +120,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
   $headtext = sanitize_text_field($atts['headtext']);
 
 
-  if (!$sheet_id || !$range || !$api_key) {
+  if (!$sheet_id) {
     return '<p class="text-red-600">⚠️ Missing Sheet ID / Range / API Key</p>';
   }
 
@@ -259,6 +259,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
       $html .= '<h3 class="!text-2xl font-bold mt-2 !mb-1 text-[#0B284D] border-b border-gray-300 !pb-0">'
         . $headtext . ' ' . esc_html($letter) . '</h3>';
     }
+
     $html .= '
         <article class="relative flex items-stretch rounded-2xl ring-1 ring-gray-200 bg-white overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all">
           <div class="flex flex-col">
