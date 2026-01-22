@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (e) => {
     const link = e.target.closest('a[href^="#pp-toc__heading-anchor"]');
     if (!link) return;
+    // ไม่ทำงานถ้า link อยู่ภายใน modal (.cgsd-modal-agency)
+    if (link.closest(".cgsd-modal-agency")) return;
     const id = link.getAttribute("href").substring(1);
     const target = document.getElementById(id);
     if (!target) return;

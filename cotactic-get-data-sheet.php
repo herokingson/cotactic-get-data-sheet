@@ -15,97 +15,7 @@ define('CGSD_SLUG', 'cotactic-get-data-sheet');
 define('CGSD_TABLE', $GLOBALS['wpdb']->prefix . 'get_data_sheets');
 
 /** -----------------------------------------------------------
- * 1) สร้างตารางเมื่อเปิดใช้งานปลั๊กอิน
- * ----------------------------------------------------------- */
-// register_activation_hook(__FILE__, function () {
-//     error_log("✅ CGSD ACTIVATION HOOK RUNNING...");
-//     global $wpdb;
-//     $charset = $wpdb->get_charset_collate();
-//     $table   = $wpdb->prefix . 'get_data_sheets';
-
-//     $sql = "CREATE TABLE IF NOT EXISTS $table (
-//         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-//         agency_name VARCHAR(255) DEFAULT '' NOT NULL,
-//         website TEXT,
-//         facebook TEXT,
-//         phone VARCHAR(50),
-//         logo TEXT,
-//         meta_desc TEXT,
-//         first_letter VARCHAR(8) DEFAULT '',
-//         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//         PRIMARY KEY  (id)
-//     ) $charset;";
-
-//     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-//     dbDelta($sql);
-
-//     error_log("✅ CGSD TABLE CREATION DONE for {$table}");
-// });
-
-/** -----------------------------------------------------------
- * 2) เมนูแอดมิน + หน้า Settings
- * ----------------------------------------------------------- */
-add_action('admin_menu', function () {
-  add_menu_page(
-    'CGSD: Sheets → DB',
-    'CGSD Sheets → DB',
-    'manage_options',
-    'cgsd-db',
-    'cgsd_admin_page',
-    'dashicons-database-import',
-    20
-  );
-});
-
-function cgsd_admin_page()
-{
-  if (!current_user_can('manage_options')) {
-    wp_die('Permission denied');
-  }
-
-  $nonce = wp_create_nonce('cgsd_admin');
-  $sheet_id = esc_attr(get_option('cgsd_sheet_id', ''));
-  $range = esc_attr(get_option('cgsd_range', 'Sheet1!A:H'));
-  $api_key = esc_attr(get_option('cgsd_api_key', ''));
-
-  ?>
-  <div class="wrap">
-    <h1>CGSD: Google Sheets → Database</h1>
-    <p>ปลั๊กอินนี้จะดึงข้อมูลจาก Google Sheets มาเก็บในตาราง <code><?php echo CGSD_TABLE; ?></code>
-      จากนั้นหน้าเว็บจะอ่านจาก DB เท่านั้น</p>
-
-    <h2 class="title">Google Sheets Settings</h2>
-    <table class="form-table">
-      <tr>
-        <th scope="row">API Key</th>
-        <td>
-          <input type="password" id="cgsd_api_key" class="regular-text" value="<?php echo $api_key; ?>">
-          <label><input type="checkbox" id="cgsd_toggle_api"> Show</label>
-        </td>
-      </tr>
-    </table>
-
-    <p>
-      <button id="cgsd_save_settings" class="button">Save Settings</button>
-      <button id="cgsd_fetch" class="button button-primary">Fetch Data → DB</button>
-      <button id="cgsd_clear" class="button">Clear Database</button>
-    </p>
-
-    <p id="cgsd_msg"></p>
-  </div>
-
-  <script>
-    window.CGSD_ADMIN = {
-      nonce: "<?php echo esc_js($nonce); ?>",
-      ajax: "<?php echo admin_url('admin-ajax.php'); ?>",
-      api_key: "<?php echo $api_key; ?>"
-    };
-  </script>
-  <?php
-}
-
-/** -----------------------------------------------------------
- * 3) Enqueue JS (admin)
+ * 1) Enqueue JS (admin)
  * ----------------------------------------------------------- */
 add_action('admin_enqueue_scripts', function ($hook) {
   if ($hook !== 'toplevel_page_cgsd-db')
@@ -132,7 +42,7 @@ add_action('wp_enqueue_scripts', function () {
 
 
 /** -----------------------------------------------------------
- * 4) AJAX: ล้าง Database
+ * 2) AJAX: ล้าง Database
  * ----------------------------------------------------------- */
 add_action('wp_ajax_cgsd_clear_db', function () {
   if (!current_user_can('manage_options'))
@@ -167,7 +77,7 @@ add_action('wp_ajax_cgsd_clear_db', function () {
 
 
 /** -----------------------------------------------------------
- * 5) AJAX (public): ดึงข้อมูลจาก DB เพื่อแสดงหน้าเว็บ
+ * 3) AJAX (public): ดึงข้อมูลจาก DB เพื่อแสดงหน้าเว็บ
  * ----------------------------------------------------------- */
 add_action('wp_ajax_nopriv_cgsd_get_db_data', 'cgsd_get_db_data');
 add_action('wp_ajax_cgsd_get_db_data', 'cgsd_get_db_data');
@@ -185,7 +95,7 @@ function cgsd_get_db_data()
 }
 
 /** -----------------------------------------------------------
- * 6) Shortcode: [cgsd_sheet]
+ * 4) Shortcode: [cgsd_sheet]
  *    แทรก container แล้วให้ JS ไปดึงจาก DB
  * ----------------------------------------------------------- */
 add_shortcode('cgsd_sheet', function ($atts) {
@@ -476,7 +386,7 @@ add_shortcode('cgsd_sheet', function ($atts) {
 });
 
 /** -----------------------------------------------------------
- * 4.1) AJAX: Save Settings  (sheet_id / range / api_key)
+ * 5) AJAX: Save Settings  (sheet_id / range / api_key)
  * ----------------------------------------------------------- */
 add_action('wp_ajax_cgsd_save_settings', function () {
   if (!current_user_can('manage_options'))
@@ -498,7 +408,7 @@ add_action('wp_ajax_cgsd_save_settings', function () {
 });
 
 /** -----------------------------------------------------------
- * 4.2) AJAX: Fetch Google Sheets → DB (ตารางหลัก CGSD_TABLE)
+ * 6) AJAX: Fetch Google Sheets → DB (ตารางหลัก CGSD_TABLE)
  * ----------------------------------------------------------- */
 add_action('wp_ajax_cgsd_fetch_to_db', function () {
   if (!current_user_can('manage_options'))
