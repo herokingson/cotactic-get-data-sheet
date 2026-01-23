@@ -90,3 +90,9 @@ html.cgsd-modal-open,
 body.cgsd-modal-open {
   overflow: hidden !important;
 }
+
+
+/* บังคับให้รายการสุดท้ายของ TOC แสดงผล */
+.pp-toc__list-wrapper > .pp-toc__list-item > .pp-toc__list-wrapper > li:last-child{
+  display: none !important;
+}
